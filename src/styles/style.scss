@@ -32,24 +32,6 @@ nav {
     border: 1px solid #ddd;
 }
 
-#service-status-table {
-    width: 100%;
-    height: auto;
-    position: relative;
-    border-collapse: collapse !important;
-    border: 1px solid #ddd;
-    border-top: 0;
-    tbody tr {
-        position: relative;
-        td {
-            padding: .5rem;
-        }
-    }
-    .selected-row {
-        background-color: rgba(0, 0, 0, .1) !important;
-    }
-}
-
 .status-code-description {
     color: #666;
     a {
@@ -247,17 +229,6 @@ footer {
     border-top: 3px solid #007bff;
 }
 
-#hide-sidebar-btn {
-    position: fixed;
-    bottom: 20px;
-    left: 10px;
-    z-index: 100;
-}
-
-#mobile-nav {
-    visibility: hidden;
-}
-
 .nav-link.active {
     border-top: 3px solid #007bff !important;
     border-radius: 0;
@@ -274,27 +245,22 @@ footer {
 }
 
 @media(max-width: 768px) {
+    .sidebar {
+        height: 100%;
+    }
     .overview .col-sm-4 {
         padding-top: 10px;
         border-right: 0;
     }
-    .sidebar {
-        display: none;
-    }
-    .content {
-        padding: 10px;
-        margin-left: 0px;
-        width: 100%;
-    }
-    #mobile-nav {
-        //display: block;
-    }
 }
 
-#status-table {
-    border: 1px solid #ddd;
-
-    thead {
-        background-color: #fff;
+#status-table-wrapper {
+    max-height: 60vh;
+    overflow: auto;
+    table {
+        border: 1px solid #ddd;
+        thead {
+            background-color: #fff;
+        }
     }
 }

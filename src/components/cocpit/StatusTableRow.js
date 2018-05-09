@@ -1,15 +1,27 @@
 import React from 'react';
 
-class StatusTableRow extends React.Component {
+import * as Actions from '../../actions/Actions';
 
+class StatusTableRow extends React.Component {
 
     checkIfSiteWorking(http_code) {
         if((http_code >= 400 && http_code < 600) || http_code < 0 || http_code == 310) return false;
         else return true;
     }
 
+    updateSingleSiteStatus() {
+        Actions.updateSingleSiteStatus(this.props.site_data['url'])
+    }
+
+    removeSite() {
+        if (!confirm("Czy na pewno usunąć witrynę " + this.props.site_data['url'] + " z monitora?")) return;
+        else Actions.removeSite(this.props.site_data['site_id']);
+    }
+
     render() {
-        const site_data = this.props.site_data
+        
+        const site_data = this.props.site_data;
+
         return (
             <tr>
                 <td>
@@ -117,7 +129,7 @@ class StatusTableRow extends React.Component {
                         let time = site_data['last_response_time'];
 
                         content = (
-                            (time == null || time == undefined) ? '-' : <i className="fa fa-clock-o" aria-hidden="true"> {time + ' s'}</i>
+                            (time == null || time == undefined) ? '-' : <i className="fa fa-clock-o" aria-hidden="true"> {time} s</i>
                         )
                         return content;
                     })()
@@ -130,7 +142,7 @@ class StatusTableRow extends React.Component {
 
                 <td>
                     <div className="btn-group" role="group" aria-label="options">
-                        <button type="button" title="Odśwież stan tej witryny" className="btn btn-sm btn-info refresh-page-status">
+                        <button type="button" onClick={this.updateSingleSiteStatus.bind(this)} title="Odśwież stan tej witryny" className="btn btn-sm btn-info refresh-page-status">
                             <i className="fa fa-refresh" aria-hidden="true"></i>
                         </button>
 
@@ -138,7 +150,7 @@ class StatusTableRow extends React.Component {
                             <i className="fa fa-pie-chart" aria-hidden="true"></i>
                         </button>
 
-                        <button type="button" title="Usuń tę witrynę z monitora" className="btn btn-sm btn-danger remove-page">
+                        <button type="button" onClick={this.removeSite.bind(this)} title="Usuń tę witrynę z monitora" className="btn btn-sm btn-danger remove-page">
                             <i className="fa fa-times" aria-hidden="true"></i>
                         </button>
                     </div>
@@ -146,6 +158,6 @@ class StatusTableRow extends React.Component {
             </tr>
         );
     }
-  }
+}
   
 export default StatusTableRow;

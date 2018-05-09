@@ -4,18 +4,24 @@ import 'font-awesome/css/font-awesome.min.css';
 
 import React from 'react';
 
-import Title from './Title';
+import {
+  BrowserRouter as Router,
+  Route
+} from 'react-router-dom';
+
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
 
-import Overview from './cocpit/Overview';
-import StatusTable from './cocpit/StatusTable';
+import Cocpit from './cocpit/Cocpit';
+import AddPage from './addPage/AddPage';
+import Stats from './stats/Stats';
 
 require('styles/style.scss');
 
 class Main extends React.Component {
   render() {
     return (
+      <Router>
       <div className='container-fluid'>
         <TopBar />
         <div className='row'>
@@ -23,13 +29,13 @@ class Main extends React.Component {
             <Sidebar />
           </div>
           <div className='col-md-10'>
-            <Title title='Kokpit' />
-            <Overview />
-            <h3>Aktualny stan witryn</h3>
-            <StatusTable />
+            <Route exact path="/" component={Cocpit} />
+            <Route path="/addPage" component={AddPage} />
+            <Route path="/stats" component={Stats} />
           </div>
         </div>
       </div>
+      </Router>
     );
   }
 }
