@@ -4,9 +4,7 @@ const axios = require('axios');
 const qs = require('qs');
 
 export function getLatestAllSitesStatus() {
-    const res = axios.get('http://localhost/monitor_stron/engine/controller.php?action=getLastAllPagesStatus');
-
-    res.then((site_data) => {
+    axios.get('http://localhost/monitor_stron/engine/controller.php?action=getLastAllPagesStatus').then((site_data) => {
         Dispather.dispatch({
             type: 'GET_ALL_SITES_STATUS',
             data: site_data.data
@@ -68,9 +66,11 @@ export function addSingleSite(url) {
 
     if(url == '' || url === undefined || url === null) return;
 
-    axios.post('http://localhost/monitor_stron/engine/controller.php?action=addSinglePage',data).then(() => {
+    axios.post('http://localhost/monitor_stron/engine/controller.php?action=addSinglePage',data).then((res) => {
         Dispather.dispatch({
-            type: 'ADD_SINGLE_SITE'
+            type: 'ADD_SINGLE_SITE',
+            response: res,
+            siteName: url
         })
     })
     .catch((err) => {
@@ -82,8 +82,8 @@ export function addMultipleSites(inputStr) {
 
     if (inputStr == '') return;
 
-    var pages_array = inputStr.split(',');
-    var pages = [];
+    let pages_array = inputStr.split(',');
+    let pages = [];
 
     pages_array.forEach(function(page) {
         pages.push(page.replace(/\s/g, ''));
@@ -94,10 +94,11 @@ export function addMultipleSites(inputStr) {
     });
     console.log("adding sites:",pages)
 
-    axios.post('http://localhost/monitor_stron/engine/controller.php?action=addMultiplePages',data).then((response) => {
+    axios.post('http://localhost/monitor_stron/engine/controller.php?action=addMultiplePages',data).then((errors) => {
         Dispather.dispatch({
             type: 'ADD_MULTIPLE_SITE',
-            response: response
+            errors: errors,
+            addedSitesCount: pages.length
         })
     })
     .catch((err) => {

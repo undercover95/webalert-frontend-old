@@ -25,10 +25,10 @@ class Main extends React.Component {
       <div className='container-fluid'>
         <TopBar />
         <div className='row'>
-          <div className='col-md-2'>
+          <div className='col-lg-2'>
             <Sidebar />
           </div>
-          <div className='col-md-10'>
+          <div className='col-lg-10'>
             <Route exact path="/" component={Cocpit} />
             <Route path="/addPage" component={AddPage} />
             <Route path="/stats" component={Stats} />

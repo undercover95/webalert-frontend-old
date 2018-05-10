@@ -11,17 +11,23 @@ class StatusTable extends React.Component {
     constructor() {
         super();
         this.state = {
-          data: []
+            beforeSend: '',
+            data: []
         };
     }
 
     updateData() {
+        this.setState({
+            beforeSend: <span><i className="fa fa-spinner fa-spin" aria-hidden="true"></i> Trwa odświeżanie...</span>
+        });
+
         Actions.updateAllSitesStatus()
     }
 
     componentWillMount() {
         SiteDataStore.on('change', () => {
             this.setState({
+                beforeSend: '',
                 data: SiteDataStore.getAllSitesData()
             });
         });
@@ -58,7 +64,7 @@ class StatusTable extends React.Component {
                         </tbody>
                     </table>
                 </div>
-                <button className='btn btn-info' onClick={this.updateData.bind(this)}><i className="fa fa-refresh" aria-hidden="true"></i> Odśwież stan wszystkich witryn</button>
+                <button className='btn btn-info' onClick={this.updateData.bind(this)}> {this.state.beforeSend == '' ? <span><i className="fa fa-refresh" aria-hidden="true"></i> Odśwież stan wszystkich witryn</span> : this.state.beforeSend}</button>
             </div>
         );
     }

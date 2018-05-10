@@ -9,7 +9,7 @@ export default class AddPage extends React.Component {
     render() {
         return (
             <div>
-                <Title title='Dodaj witrynę' />
+                <Title title='Dodaj witrynę do monitora' />
                 
                 <div className="card mb-3">
                     <div className="card-header"><i className="fa fa-file-o" aria-hidden="true"></i> Dodaj pojedynczą stronę

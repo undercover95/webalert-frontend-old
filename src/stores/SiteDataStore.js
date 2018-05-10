@@ -8,6 +8,7 @@ class SiteDataStore extends EventEmitter {
         super();
         this.siteData = [];
         this.requestResponses = {
+            addSingleSiteResponse: null,
             addMultipleSitesResponse: null
         };
     }
@@ -28,10 +29,22 @@ class SiteDataStore extends EventEmitter {
         this.emit('counterChange');
     }
 
-    resultOfAddingMultipleSites(response) {
-        console.log('response',response);
-        this.requestResponses['addMultipleSitesResponse'] = response.data;
+    serviceResultOfAddingMultipleSites(errors, addedSitesCount) {
+        console.log('response',errors, addedSitesCount);
+        this.requestResponses.addMultipleSitesResponse = {
+            errors: errors.errors,
+            addedSitesCount: addedSitesCount
+        }
         this.emit('addMultipleSitesResponse');
+    }
+
+    serviceResultOfAddingSingleSite(response, siteName) {
+        console.log("response single:",response);
+        this.requestResponses.addSingleSiteResponse = {
+            result: response.result,
+            siteName: siteName
+        }
+        this.emit('addSingleSiteResponse');
     }
 
     checkIfSiteWorking(http_code) {
@@ -55,8 +68,12 @@ class SiteDataStore extends EventEmitter {
             case 'GET_ALL_SITES_STATUS': 
                 this.updateAllSitesData(action.data)
                 break;
+            case 'ADD_SINGLE_SITE':
+                this.serviceResultOfAddingSingleSite(action.response.data, action.siteName)
+                break;
             case 'ADD_MULTIPLE_SITE':
-                this.resultOfAddingMultipleSites(action.response)
+                this.serviceResultOfAddingMultipleSites(action.errors.data, action.addedSitesCount)
+                break;
         }
     }
 }
