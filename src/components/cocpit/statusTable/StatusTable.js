@@ -16,13 +16,15 @@ class StatusTable extends React.Component {
         super();
         this.state = {
             beforeSend: '',
+            isRefreshing: false,
             data: []
         };
     }
 
     updateData() {
         this.setState({
-            beforeSend: <span><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Trwa odświeżanie...</span>
+            beforeSend: <span><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Trwa odświeżanie...</span>,
+            isRefreshing: true
         });
 
         Actions.updateAllSitesStatus()
@@ -48,6 +50,7 @@ class StatusTable extends React.Component {
 
         return (
             <div>
+                <h3>Aktualny stan witryn</h3>
                 <div id='status-table-wrapper' className='table-responsive mb-3'>
                     <table className='table table-striped'>
                         <thead>
@@ -64,7 +67,6 @@ class StatusTable extends React.Component {
                         <tbody>{
                                 !emptyData ? (
                                     this.state.data.map(site_data => {
-                                        //console.log('dataTable: ',site_data)
                                         return <StatusTableRow key={site_data.site_id} site_data={site_data} />
                                     })
                                 ) : ''
@@ -80,7 +82,7 @@ class StatusTable extends React.Component {
                     }
                 </div>
                 <button className='btn btn-info' onClick={this.updateData.bind(this)} disabled={this.state.beforeSend == '' ? false : true}>
-                    {this.state.beforeSend == '' ? <span><i className='fa fa-refresh' aria-hidden='true'></i> Odśwież stan wszystkich witryn</span> : this.state.beforeSend}
+                        {this.state.beforeSend == '' ? <span><i className='fa fa-refresh' aria-hidden='true'></i> Odśwież stan wszystkich witryn</span> : this.state.beforeSend}
                 </button>
             </div>
         );

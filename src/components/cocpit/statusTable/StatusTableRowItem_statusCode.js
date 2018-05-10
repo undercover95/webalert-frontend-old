@@ -5,6 +5,7 @@ export default class StatusTableRowItem_statusCode extends React.Component {
     render() {
         
         const status_code = this.props.status_code;
+        const short_desc = this.props.short_desc;
 
         return (
             <td>
@@ -36,19 +37,13 @@ export default class StatusTableRowItem_statusCode extends React.Component {
                             <span className={'badge ' + badgeClass}>
                                 {(code == null || code == undefined ? '-' : code)}
                             </span>&nbsp;
-                            {/*
+                            {
                             <span className='status-code-description'>
                                 <small>
-                                    {site_data['short_desc'] == null ? '' : site_data['short_desc']}
+                                    {short_desc == null ? '' : short_desc}
                                 </small>
-
-                            
-                                (code == null || code == undefined) ? '' :
-                                <a data-toggle='popover' title={site_data['short_desc'] == null ? 'NULL' : (code + ' - ' + site_data['short_desc'])} data-content={site_data['long_desc'] == null ? 'NULL' : site_data['long_desc']} data-trigger='focus' href='#!'>
-                                    <i className='fa fa-question-circle' aria-hidden='true'></i>
-                                </a>
-                             </span>
-                            */}
+                            </span>
+                            }
                         </span>
                     )
                     return content;

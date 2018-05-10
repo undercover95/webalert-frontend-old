@@ -52,8 +52,8 @@ class StatusTableRow extends React.Component {
                 </td>
 
                 <StatusTableRowItem_url url={site_data['url']}/>
-                <StatusTableRowItem_statusCode status_code={site_data['status_code']}/>
-                <StatusTableRowItem_status status_code={site_data['status_code']} last_working_time={site_data['last_working_time']}/>
+                <StatusTableRowItem_statusCode status_code={site_data['status_code']} short_desc={site_data['short_desc']}/>
+                <StatusTableRowItem_status status_code={site_data['status_code']} last_working_time={site_data['last_working_time']} />
                 <StatusTableRowItem_responseTime last_response_time={site_data['last_response_time']}/>
                 <StatusTableRowItem_lastChecked isRefreshing={this.state.isRefreshing} last_checked={site_data['last_checked']}/>
 

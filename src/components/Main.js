@@ -24,7 +24,7 @@ class Main extends React.Component {
       <Router>
       <div className='container-fluid'>
         <TopBar />
-        <div className='row'>
+        <div className='row mb-4'>
           <div className='col-lg-2'>
             <Sidebar />
           </div>

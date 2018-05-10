@@ -11,7 +11,6 @@ export default class Cocpit extends React.Component {
             <div>
                 <Title title='Kokpit' />
                 <Overview />
-                <h3>Aktualny stan witryn</h3>
                 <StatusTable />
             </div>
         )
