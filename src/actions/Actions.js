@@ -86,6 +86,7 @@ export function addMultipleSites(inputStr) {
     let pages = [];
 
     pages_array.forEach(function(page) {
+        if(page == '' || page == null || page == undefined) return;
         pages.push(page.replace(/\s/g, ''));
     });
 

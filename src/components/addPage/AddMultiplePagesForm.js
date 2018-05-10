@@ -1,6 +1,6 @@
 import React from 'react';
 
-import SiteDataStore from '../../stores/SiteDataStore';
+import ResponseStore from '../../stores/ResponseStore';
 import * as Actions from '../../actions/Actions';
 
 import AddMultiplePagesFormResponse from './AddMultiplePagesFormResponse';
@@ -21,10 +21,10 @@ export default class AddMultiplePagesForm extends React.Component {
 
     componentWillMount() {
         console.log("componentWillMount");
-        SiteDataStore.on('addMultipleSitesResponse', () => {
+        ResponseStore.on('addMultipleSitesResponse', () => {
             this.setState({
                 beforeSend: '',
-                response: SiteDataStore.getResponse('addMultipleSitesResponse')
+                response: ResponseStore.getResponse('addMultipleSitesResponse')
             });
         })
     }

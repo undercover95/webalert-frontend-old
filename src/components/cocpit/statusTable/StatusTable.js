@@ -1,7 +1,11 @@
 import React from 'react';
 
-import SiteDataStore from '../../stores/SiteDataStore';
-import * as Actions from '../../actions/Actions';
+import SiteDataStore from '../../../stores/SiteDataStore';
+import * as Actions from '../../../actions/Actions';
+
+import {
+    NavLink as Link
+  } from 'react-router-dom';
 
 import StatusTableRow from './StatusTableRow';
 //import StatusTableBottomToolbar from './StatusTableBottomToolbar';
@@ -18,7 +22,7 @@ class StatusTable extends React.Component {
 
     updateData() {
         this.setState({
-            beforeSend: <span><i className="fa fa-spinner fa-spin" aria-hidden="true"></i> Trwa odświeżanie...</span>
+            beforeSend: <span><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Trwa odświeżanie...</span>
         });
 
         Actions.updateAllSitesStatus()
@@ -38,6 +42,10 @@ class StatusTable extends React.Component {
     }
 
     render() {
+        let emptyData = false;
+
+        if(this.state.data.length == 0) emptyData = true;
+
         return (
             <div>
                 <div id='status-table-wrapper' className='table-responsive mb-3'>
@@ -54,17 +62,26 @@ class StatusTable extends React.Component {
                             </tr>
                         </thead>
                         <tbody>{
-                                this.state.data.length != 0 ? (
+                                !emptyData ? (
                                     this.state.data.map(site_data => {
                                         //console.log('dataTable: ',site_data)
                                         return <StatusTableRow key={site_data.site_id} site_data={site_data} />
                                     })
-                                ) : console.log('StatusTable -> this.state.data is empty!')
+                                ) : ''
                         }
                         </tbody>
                     </table>
+                    {
+                        emptyData ? (
+                            <div className='alert alert-info'>
+                            <h5 className='alert-heading'><i className='fa fa-info-circle'></i> Brak danych do wyświetlenia.</h5>
+                            Aktualnie nie monitorujesz żadnych stron. Spróbuj <Link to='/addPage' className='alert-link'>dodać witryny</Link> do monitora.</div>
+                        ) : ''
+                    }
                 </div>
-                <button className='btn btn-info' onClick={this.updateData.bind(this)}> {this.state.beforeSend == '' ? <span><i className="fa fa-refresh" aria-hidden="true"></i> Odśwież stan wszystkich witryn</span> : this.state.beforeSend}</button>
+                <button className='btn btn-info' onClick={this.updateData.bind(this)} disabled={this.state.beforeSend == '' ? false : true}>
+                    {this.state.beforeSend == '' ? <span><i className='fa fa-refresh' aria-hidden='true'></i> Odśwież stan wszystkich witryn</span> : this.state.beforeSend}
+                </button>
             </div>
         );
     }

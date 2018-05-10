@@ -1,8 +1,8 @@
 import React from 'react';
 import OverviewItem from './OverviewItem';
 
-import SiteDataStore from '../../stores/SiteDataStore';
-import * as Actions from '../../actions/Actions';
+import SiteDataStore from '../../../stores/SiteDataStore';
+import * as Actions from '../../../actions/Actions';
 
 class Overview extends React.Component {
 

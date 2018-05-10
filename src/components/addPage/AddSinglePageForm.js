@@ -1,6 +1,6 @@
 import React from 'react';
 
-import SiteDataStore from '../../stores/SiteDataStore';
+import ResponseStore from '../../stores/ResponseStore';
 import * as Actions from '../../actions/Actions';
 
 import AddSinglePageFormResponse from './AddSinglePageFormResponse';
@@ -20,10 +20,10 @@ export default class AddSinglePageForm extends React.Component {
     }
 
     componentWillMount() {
-        SiteDataStore.on('addSingleSiteResponse', () => {
+        ResponseStore.on('addSingleSiteResponse', () => {
             this.setState({
                 beforeSend: '',
-                response: SiteDataStore.getResponse('addSingleSiteResponse')
+                response: ResponseStore.getResponse('addSingleSiteResponse')
             });
         })
     }

@@ -1,8 +1,8 @@
 import React from 'react';
 
 import Title from '../Title';
-import Overview from './Overview';
-import StatusTable from './StatusTable';
+import Overview from './overview/Overview';
+import StatusTable from './statusTable/StatusTable';
 
 export default class Cocpit extends React.Component {
 

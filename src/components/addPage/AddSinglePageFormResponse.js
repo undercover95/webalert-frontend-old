@@ -1,8 +1,5 @@
 import React from 'react';
 
-import SiteDataStore from '../../stores/SiteDataStore';
-import * as Actions from '../../actions/Actions';
-
 export default class AddSinglePageFormResponse extends React.Component {
 
     render() {
