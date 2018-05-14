@@ -8,7 +8,7 @@ class OverviewItem extends React.Component {
         const counter = this.props.counter;
 
         return (
-            <div id={this.props.type} className='card overview-content mb-3'>
+            <div id={this.props.type} className={'card overview-content mb-3' + (counter == 0 ? ' not-working-counter-inactive' : '')}>
                 <div className='card-body'>
                     <i className={'fa fa-2x '+icon} aria-hidden='true'></i>
                     <span className='badge overview-counter'>{counter}</span><br/>

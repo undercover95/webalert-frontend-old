@@ -10,6 +10,7 @@ export default class AddMultiplePagesForm extends React.Component {
     constructor() {
         super();
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.getResponse = this.getResponse.bind(this);
         this.state = {
             beforeSend: '',
             response: {
@@ -19,14 +20,19 @@ export default class AddMultiplePagesForm extends React.Component {
         };
     }
 
+    getResponse() {
+        this.setState({
+            beforeSend: '',
+            response: ResponseStore.getResponse('addMultipleSitesResponse')
+        });
+    }
+
     componentWillMount() {
-        console.log("componentWillMount");
-        ResponseStore.on('addMultipleSitesResponse', () => {
-            this.setState({
-                beforeSend: '',
-                response: ResponseStore.getResponse('addMultipleSitesResponse')
-            });
-        })
+        ResponseStore.on('addMultipleSitesResponse', this.getResponse)
+    }
+
+    componentWillUnmount() {
+        ResponseStore.removeListener('addMultipleSitesResponse', this.getResponse)
     }
 
     handleSubmit(event) {
@@ -34,7 +40,7 @@ export default class AddMultiplePagesForm extends React.Component {
         const data = new FormData(event.target);
         
         this.setState({
-            beforeSend: <div className='mt-3'><i className="fa fa-spinner fa-spin" aria-hidden="true"></i> Trwa dodawanie stron...</div>
+            beforeSend: <div className='mt-3'><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Trwa dodawanie stron...</div>
         });
 
         Actions.addMultipleSites(data.get('urls'));

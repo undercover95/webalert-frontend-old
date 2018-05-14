@@ -1,14 +1,15 @@
 import React from 'react';
 
-import * as Actions from '../../../actions/Actions';
-import SiteDataStore from '../../../stores/SiteDataStore';
+import * as Actions from 'actions/Actions';
+import SiteDataStore from 'stores/SiteDataStore';
 
+import StatusTableRowItem_checkBox from './StatusTableRowItem_checkBox';
 import StatusTableRowItem_url from './StatusTableRowItem_url';
 import StatusTableRowItem_statusCode from './StatusTableRowItem_statusCode';
 import StatusTableRowItem_status from './StatusTableRowItem_status';
 import StatusTableRowItem_responseTime from './StatusTableRowItem_responseTime';
 import StatusTableRowItem_lastChecked from './StatusTableRowItem_lastChecked';
-
+import StatusTableRowItem_buttons from './StatusTableRowItem_buttons';
 
 class StatusTableRow extends React.Component {
 
@@ -17,14 +18,21 @@ class StatusTableRow extends React.Component {
         this.state = {
             isRefreshing: false
         }
+        this.hideRefreshingInfo = this.hideRefreshingInfo.bind(this);
+    }
+
+    hideRefreshingInfo () {
+        this.setState({
+            isRefreshing: false
+        });
     }
 
     componentWillMount() {
-        SiteDataStore.on('change', () => {
-            this.setState({
-                isRefreshing: false
-            });
-        });
+        SiteDataStore.on('change', this.hideRefreshingInfo);
+    }
+
+    componentWillUnmount() {
+        SiteDataStore.removeListener('change', this.hideRefreshingInfo);
     }
 
     updateSingleSiteStatus() {
@@ -33,12 +41,17 @@ class StatusTableRow extends React.Component {
             isRefreshing: true
         });
 
-        Actions.updateSingleSiteStatus(this.props.site_data['url'])
+        Actions.updateSingleSiteStatus(this.props.site_data['site_id'])
     }
 
     removeSite() {
-        if (!confirm("Czy na pewno usunąć witrynę " + this.props.site_data['url'] + " z monitora?")) return;
+        if (!confirm('Czy na pewno usunąć witrynę ' + this.props.site_data['url'] + ' z monitora?')) return;
         else Actions.removeSite(this.props.site_data['site_id']);
+    }
+
+    checkIfSiteWorking(http_code) {
+        if((http_code >= 400 && http_code < 600) || http_code < 0 || http_code == 310) return false;
+        else return true;
     }
 
     render() {
@@ -46,32 +59,14 @@ class StatusTableRow extends React.Component {
         const site_data = this.props.site_data;
 
         return (
-            <tr>
-                <td>
-                    <input className="select-site" type="checkbox"/>
-                </td>
-
+            <tr className={this.checkIfSiteWorking(site_data['status_code']) ? '' : 'not-working'}>
+                <StatusTableRowItem_checkBox site_id={site_data['site_id']} />
                 <StatusTableRowItem_url url={site_data['url']}/>
-                <StatusTableRowItem_statusCode status_code={site_data['status_code']} short_desc={site_data['short_desc']}/>
+                <StatusTableRowItem_statusCode status_code={site_data['status_code']} short_desc={site_data['short_desc']} long_desc={site_data['long_desc']} site_id={site_data['site_id']} />
                 <StatusTableRowItem_status status_code={site_data['status_code']} last_working_time={site_data['last_working_time']} />
                 <StatusTableRowItem_responseTime last_response_time={site_data['last_response_time']}/>
                 <StatusTableRowItem_lastChecked isRefreshing={this.state.isRefreshing} last_checked={site_data['last_checked']}/>
-
-                <td>
-                    <div className="btn-group" role="group" aria-label="options">
-                        <button type="button" onClick={this.updateSingleSiteStatus.bind(this)} title="Odśwież stan tej witryny" className="btn btn-sm btn-info refresh-page-status" disabled={this.state.isRefreshing ? true : false}>
-                            <i className="fa fa-refresh" aria-hidden="true"></i>
-                        </button>
-
-                        <button type="button" className="btn btn-sm btn-light view-stats-btn" title="Pokaż statystyki dla tej witryny">
-                            <i className="fa fa-pie-chart" aria-hidden="true"></i>
-                        </button>
-
-                        <button type="button" onClick={this.removeSite.bind(this)} title="Usuń tę witrynę z monitora" className="btn btn-sm btn-danger remove-page">
-                            <i className="fa fa-times" aria-hidden="true"></i>
-                        </button>
-                    </div>
-                </td>
+                <StatusTableRowItem_buttons url={site_data['url']} isRefreshing={this.state.isRefreshing} updateSingleSiteStatusFn={this.updateSingleSiteStatus.bind(this)} removeSiteFn={this.removeSite.bind(this)} />
             </tr>
         );
     }

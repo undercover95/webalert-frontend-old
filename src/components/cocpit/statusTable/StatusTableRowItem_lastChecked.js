@@ -23,8 +23,8 @@ export default class StatusTableRowItem_lastChecked extends React.Component {
             's': 'sek.'
         }
     
-        var result = "";
-        result += hours + ' ' + strings['h'] + ' ' + minutes + ' ' + strings['i'] + ' ' + seconds + ' ' + strings['s'] + " temu";
+        var result = '';
+        result += hours + ' ' + strings['h'] + ' ' + minutes + ' ' + strings['i'] + ' ' + seconds + ' ' + strings['s'] + ' temu';
         return result;
     }
 

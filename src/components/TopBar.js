@@ -1,29 +1,69 @@
 import React from 'react';
 
+import {
+    Collapse,
+    Navbar,
+    NavbarToggler,
+    NavbarBrand,
+    Nav,
+    NavItem,
+    NavLink,
+    UncontrolledDropdown,
+    DropdownToggle,
+    DropdownMenu,
+    DropdownItem } from 'reactstrap';
+
+import {
+    NavLink as Link
+    } from 'react-router-dom';
+
 class TopBar extends React.Component {
+    constructor() {
+        super();
+    
+        this.toggle = this.toggle.bind(this);
+        this.state = {
+          isOpen: false
+        };
+    }
+    toggle() {
+        this.setState({
+            isOpen: !this.state.isOpen
+        });
+    }
+
     render() {
         return (
-            <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-                <a className="navbar-brand" href="/monitor_stron"><i className="fa fa-globe" aria-hidden="true"></i> Monitor stron internetowych</a>
+            <Navbar color="light" light expand="md" className='mb-3'>
+                <NavbarBrand id='brand'>Monitor stron internetowych
+                </NavbarBrand>
 
-                <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
-                </button>
-
-                <div className="collapse navbar-collapse">
-                    <ul className="navbar-nav ml-auto">
-                        <span className="navbar-text">Zalogowano jako</span>
-                        <li className="nav-item dropdown">
-                            <a className="nav-link dropdown-toggle" href="#" id="navbarDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i className="fa fa-user-circle" aria-hidden="true"></i> User</a>
-                        
-                            <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a className="dropdown-item" href="/monitor_stron/settings.php">Ustawienia</a>
-                                <a className="dropdown-item" href="/monitor_stron/engine/controller.php?action=logout"><i className="fa fa-sign-out" aria-hidden="true"></i> Wyloguj</a>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
+                <NavbarToggler onClick={this.toggle} />
+                <Collapse isOpen={this.state.isOpen} navbar>
+                    <Nav className="mr-auto" navbar>
+                        <NavItem>
+                            <Link exact to='/' activeClassName='active' className='nav-link'>
+                            <i className='fa fa-home' aria-hidden='true'></i> Kokpit
+                            </Link>
+                        </NavItem>
+                        <NavItem>
+                            <Link to='/addPage' activeClassName='active' className='nav-link'>
+                                <i className='fa fa-plus-circle' aria-hidden='true'></i> Dodaj witrynę
+                            </Link>
+                        </NavItem>
+                        <NavItem>
+                            <Link to='#' activeClassName='active' className='nav-link'>
+                                <i className='fa fa-bullhorn' aria-hidden='true'></i> Raporty <span className='badge badge-danger'>5</span>
+                            </Link>
+                        </NavItem>
+                    </Nav>
+                    <Nav className='ml-auto'>
+                        <span className="navbar-text">
+                            Zalogowano jako: <i className='fa fa-user-circle' aria-hidden='true'></i> User
+                        </span>
+                    </Nav>
+                </Collapse>
+            </Navbar>
         );
     }
 }

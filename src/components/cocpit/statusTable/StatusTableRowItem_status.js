@@ -28,15 +28,15 @@ export default class StatusTableRowItem_status extends React.Component {
                             content = (
                                 <div>
                                     <span>
-                                        <i className="fa fa-question-circle" aria-hidden="true"></i> Nie określono
+                                        <i className='fa fa-question-circle' aria-hidden='true'></i> Nie określono
                                     </span>
                                 </div>
                             )
                         } else if (!this.checkIfSiteWorking(code)) {
                             content = (
                                 <div>
-                                    <span className="not-working-text">
-                                        <i className="fa fa-times-circle" aria-hidden="true"></i> Nie działa
+                                    <span className='not-working-text'>
+                                        <i className='fa fa-times-circle' aria-hidden='true'></i> Nie działa
                                     </span><br/>
                                     <small>Od: {last_working_time ? '' : 'Nie określono'}</small>
                                 </div>
@@ -44,7 +44,7 @@ export default class StatusTableRowItem_status extends React.Component {
                         } else {
                             content = (
                                 <div>
-                                    <span className="working-text"><i className="fa fa-check-circle" aria-hidden="true"></i> Działa</span>
+                                    <span className='working-text'><i className='fa fa-check-circle' aria-hidden='true'></i> Działa</span>
                                 </div>
                             )
                         }

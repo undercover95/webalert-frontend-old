@@ -3,7 +3,7 @@ $working-color: #009933;
 $not-working-color: #cc0000;
 
 body {
-    background-color: rgba(0, 0, 0, 0.045) !important;
+    background-color: rgba(0, 0, 0, 0.06) !important;
     font-family: 'Roboto', sans-serif;
     font-size: 0.95rem;
 }
@@ -19,6 +19,26 @@ h5 {
 nav {
     border-top: 4px solid $default-color; //border-bottom: 1px solid #ccc;
     box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.25);
+
+    #brand {
+        font-family: 'Roboto Condensed', sans-serif;
+        color: #444;
+    }
+}
+
+.nav-tabs {
+    a.active {
+        border-top: 3px solid $default-color !important;
+    }
+}
+
+
+:not(output):-moz-ui-invalid:not(:focus) {
+    box-shadow: none;
+  }
+  
+:not(output):-moz-ui-invalid:-moz-focusring:not(:focus) {
+box-shadow: none;
 }
 
 .custom-bg {
@@ -54,12 +74,29 @@ nav {
     }
 }
 
+.statusToolTip {
+    background-color: rgba($default-color, .7);
+    border-radius: 50%;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    color: #fff;
+    margin-left: 5px;
+
+    &:hover {
+        cursor: pointer;
+        background-color: $default-color;
+    }
+}
+
 .working {
     /*background-color: rgba($working-color, .2);*/
 }
 
 .not-working {
-    background-color: rgba($not-working-color, .2);
+    background-color: rgba($not-working-color, .2) !important;
 }
 
 .working-text {
@@ -84,35 +121,52 @@ nav {
 /* sidebar */
 .sidebar {
     height: 100vh;
-    .list-group-item {
-        background-color: transparent;
-        color: #ddd;
-        border: none;
-        border-radius: 0 !important;
-        &.active {
-            z-index: 2;
-            color: #fff !important;
-            background-color: #007bff !important;
-        }
-        &:hover {
-            color: #007bff;
+    width: 200px;
+    position: fixed;
+    margin-top: 60px;
+
+    .list-group {
+        height: inherit;
+        .list-group-item {
+            background-color: transparent;
+            color: #ddd;
+            border: none;
+            border-radius: 0 !important;
+            &.active {
+                z-index: 2;
+                color: #fff !important;
+                background-color: #007bff !important;
+            }
+            &:hover {
+                color: #007bff;
+            }
         }
     }
 }
 
+.content {
+    margin-left: 200px;
+    margin-top: 60px;
+}
+
 #bottom-table-toolbar {
     margin: 0px;
-    margin-top: 10px;
     padding: 10px 0;
     background-color: rgba(0, 0, 0, .03);
-    border-top: 1px solid rgba(0, 0, 0, .125);
-    #selected-items-action-form {
-        select {
-            display: inline-block;
-            max-width: 300px;
-            margin-left: 10px;
-        }
-    }
+    border: 1px solid rgba(0, 0, 0, .075);
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+}
+
+select.styled-select {
+    -webkit-appearance: none; 
+    -moz-appearance: none;
+    background: url(http://i62.tinypic.com/15xvbd5.png) no-repeat 96% 0;
+    background-color: white;
+    line-height: inherit;
+    height: 31px !important;
+    padding: 5px;
+    width: 250px !important;
 }
 
 footer {
@@ -171,12 +225,48 @@ footer {
 }
 
 #not-working-counter {
-    background-color: rgba($not-working-color, 0.2);
+    background-color: rgba($not-working-color, 0.25);
+    animation: pulse 2s infinite;
+
     .overview-counter {
         background-color: rgba($not-working-color, 0.8);
     }
 }
 
+.not-working-counter-inactive {
+    background-color: rgba(#444, 0.2) !important;
+    animation: none !important;
+
+    .overview-counter {
+        background-color: rgba(#444, 0.8) !important;
+    }
+}
+
+@-webkit-keyframes pulse {
+    0% {
+      -webkit-box-shadow: 0 0 0 0 rgba(red, 0.4);
+    }
+    70% {
+        -webkit-box-shadow: 0 0 0 15px rgba(red, 0);
+    }
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgba(red, 0);
+    }
+  }
+  @keyframes pulse {
+    0% {
+      -moz-box-shadow: 0 0 0 0 rgba(red, 0.4);
+      box-shadow: 0 0 0 0 rgba(red, 0.4);
+    }
+    70% {
+        -moz-box-shadow: 0 0 0 15px rgba(red, 0);
+        box-shadow: 0 0 0 15px rgba(red, 0);
+    }
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgba(red, 0);
+        box-shadow: 0 0 0 0 rgba(red, 0);
+    }
+  }
 
 
 
@@ -196,29 +286,46 @@ footer {
 }
 
 #averageResponseTimeIndicator {
-    background-color: rgba(0, 138, 230, 0.2);
-    border: 1px solid rgba(0, 138, 230, 0.5);
+    background-color: rgba($default-color, 0.2);
+    border: 1px solid rgba($default-color, 0.5);
+    .badge {
+        background-color: rgba($default-color, 0.8);
+    }
 }
 
 #workFromIndicator {
-    background-color: rgba(0, 207, 28, 0.2);
-    border: 1px solid rgba(0, 207, 28, 0.2);
+    background-color: rgba($default-color, 0.2);
+    border: 1px solid rgba($default-color, 0.5);
+    .badge {
+        background-color: rgba($default-color, 0.8);
+    }
 }
 
 #notWorkFromIndicator {
-    background-color: rgba(236, 0, 0, 0.2);
-    border: 1px solid rgba(236, 0, 0, 0.2);
+    background-color: rgba($default-color, 0.2);
+    border: 1px solid rgba($default-color, 0.5);
+    .badge {
+        background-color: rgba($default-color, 0.8);
+    }
 }
 
 .statsOverview {
     padding: 20px 10px;
+    text-align: center;
     border-radius: 5px;
-    span {
+
+    .badge {
         font-size: 1.5rem;
     }
+    .statsOverviewDescription {
+        margin-top: 5px;
+        font-weight: bold;
+        color: #f2f2f2;
+        padding: 5px 10px;
+        font-size: 1rem;
+        background-color: lighten(rgba($default-color, 0.8), 12%) !important;
+    }
 }
-
-#select-period-wrapper {}
 
 .badge {
     text-shadow: 1px 1px 1px rgba(0, 0, 0, .5);
@@ -230,11 +337,6 @@ footer {
     border-top: 3px solid #007bff;
 }
 
-.nav-link.active {
-    border-top: 3px solid #007bff !important;
-    border-radius: 0;
-}
-
 .serviceStatusIndicator {
     width: 15px;
     height: 15px;
@@ -244,6 +346,8 @@ footer {
     display: inline-block;
     margin-right: 10px;
 }
+
+
 
 @media(max-width: 768px) {
     .sidebar {
@@ -260,6 +364,7 @@ footer {
     overflow: auto;
     table {
         border: 1px solid #ddd;
+        margin-bottom: 0px;
         thead {
             background-color: #fff;
         }

@@ -1,24 +1,28 @@
 import React from 'react';
 
-import SiteDataStore from '../../../stores/SiteDataStore';
-import * as Actions from '../../../actions/Actions';
+import SiteDataStore from 'stores/SiteDataStore';
+import * as Actions from 'actions/Actions';
 
 import {
     NavLink as Link
   } from 'react-router-dom';
 
 import StatusTableRow from './StatusTableRow';
-//import StatusTableBottomToolbar from './StatusTableBottomToolbar';
+import StatusTableBottomToolbar from './StatusTableBottomToolbar';
 
 class StatusTable extends React.Component {
+    
+    interval = 0;
 
     constructor() {
         super();
         this.state = {
             beforeSend: '',
+            waitingForData: false,
             isRefreshing: false,
             data: []
         };
+        this.getData = this.getData.bind(this);
     }
 
     updateData() {
@@ -30,28 +34,59 @@ class StatusTable extends React.Component {
         Actions.updateAllSitesStatus()
     }
 
-    componentWillMount() {
-        SiteDataStore.on('change', () => {
-            this.setState({
-                beforeSend: '',
-                data: SiteDataStore.getAllSitesData()
-            });
+    getData() {
+        console.log("data received");
+        this.setState({
+            beforeSend: '',
+            waitingForData: false,
+            data: SiteDataStore.getAllSitesData()
         });
     }
 
-    componentDidMount() {
-        Actions.getLatestAllSitesStatus()
+    componentWillMount() {
+        SiteDataStore.on('change', this.getData);
     }
+
+    componentWillUnmount() {
+        //clearInterval(this.cyclicUpdateIntervalId);
+        SiteDataStore.removeListener('change', this.getData);
+    }
+
+    componentDidMount() {
+        this.interval = 10;
+        //console.log("data request sent");
+
+        this.setState({
+            waitingForData: true
+        });
+
+        Actions.getLatestAllSitesStatus();
+        /*this.cyclicUpdateIntervalId = setInterval(() => {
+            Actions.getLatestAllSitesStatus();
+            console.log('updated');
+        }, this.interval*1000);*/
+    }
+
+
 
     render() {
         let emptyData = false;
+        let waitingForData = this.state.waitingForData;
 
         if(this.state.data.length == 0) emptyData = true;
 
         return (
             <div>
-                <h3>Aktualny stan witryn</h3>
-                <div id='status-table-wrapper' className='table-responsive mb-3'>
+                <div className='row'>
+                    <div className='col'>
+                        <h3>Aktualny stan witryn</h3>
+                    </div>
+                    <div className='col text-right'>
+                        <span style={{'lineHeight': '41px', 'fontStyle':'italic'}}><i className='fa fa-info-circle' aria-hidden='true'></i> Dane w tabeli odświeżane są automatycznie co {this.interval} sekund.</span>
+                    </div>
+                </div>
+                
+                <div id='status-table-wrapper' className='table-responsive'>
                     <table className='table table-striped'>
                         <thead>
                             <tr>
@@ -65,25 +100,34 @@ class StatusTable extends React.Component {
                             </tr>
                         </thead>
                         <tbody>{
-                                !emptyData ? (
-                                    this.state.data.map(site_data => {
-                                        return <StatusTableRow key={site_data.site_id} site_data={site_data} />
-                                    })
-                                ) : ''
+                            !emptyData ? (
+                                this.state.data.map(site_data => {
+                                    return <StatusTableRow key={site_data.site_id} site_data={site_data} />
+                                })
+                            ) : ''
                         }
                         </tbody>
                     </table>
                     {
-                        emptyData ? (
-                            <div className='alert alert-info'>
-                            <h5 className='alert-heading'><i className='fa fa-info-circle'></i> Brak danych do wyświetlenia.</h5>
-                            Aktualnie nie monitorujesz żadnych stron. Spróbuj <Link to='/addPage' className='alert-link'>dodać witryny</Link> do monitora.</div>
-                        ) : ''
+                        !waitingForData ? (
+                            emptyData ? (
+                                <div className='alert alert-info'>
+                                <h5 className='alert-heading'><i className='fa fa-info-circle'></i> Brak danych do wyświetlenia.</h5>
+                                Aktualnie nie monitorujesz żadnych stron. Spróbuj <Link to='/addPage' className='alert-link'>dodać witryny</Link> do monitora.</div>
+                            ) : ''
+                        ) : (
+                            <span><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Pobieram aktualne dane...</span>
+                        )
+
                     }
                 </div>
-                <button className='btn btn-info' onClick={this.updateData.bind(this)} disabled={this.state.beforeSend == '' ? false : true}>
-                        {this.state.beforeSend == '' ? <span><i className='fa fa-refresh' aria-hidden='true'></i> Odśwież stan wszystkich witryn</span> : this.state.beforeSend}
-                </button>
+                {
+                    !waitingForData ? (
+                        !emptyData ? (
+                            <StatusTableBottomToolbar updateData={this.updateData.bind(this)} beforeSend={this.state.beforeSend}/>
+                        ) : ''
+                    ) : ''
+                }
             </div>
         );
     }

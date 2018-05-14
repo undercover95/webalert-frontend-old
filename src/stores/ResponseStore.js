@@ -26,7 +26,7 @@ class ResponseStore extends EventEmitter {
     }
 
     serviceResultOfAddingSingleSite(response, siteName) {
-        console.log("response single:",response);
+        console.log('response single:',response);
         this.requestResponses.addSingleSiteResponse = {
             result: response.result,
             siteName: siteName
@@ -37,7 +37,7 @@ class ResponseStore extends EventEmitter {
     handleActions(action){
         const type = action.type;
         
-        switch(action.type) {
+        switch(type) {
             case 'ADD_SINGLE_SITE':
                 this.serviceResultOfAddingSingleSite(action.response.data, action.siteName)
                 break;

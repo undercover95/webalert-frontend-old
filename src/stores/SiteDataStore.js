@@ -7,17 +7,37 @@ class SiteDataStore extends EventEmitter {
     constructor() {
         super();
         this.siteData = [];
+        this.checkedSites = [];
     }
 
     getAllSitesData() {
         return this.siteData;
     }
 
+    getCheckedSites() {
+        return this.checkedSites;
+    }
 
+    saveCheckedSite(site_id) {
+        
+        if(!this.checkedSites.includes(site_id)) {
+            this.checkedSites.push(site_id);
+            //console.log(this.checkedSites);
+            this.emit('checkedSiteChange');
+        }
+    }
+
+    removeCheckedSite(site_id) {
+        
+        if(this.checkedSites.includes(site_id)) {
+            this.checkedSites.splice(this.checkedSites.indexOf(site_id),1);
+            //console.log(this.checkedSites);
+            this.emit('checkedSiteChange');
+        }
+    }
 
     updateAllSitesData(data) {
-        //console.log('updateAllSitesData', data);
-        this.siteData = data;
+        this.siteData = data.result;
 
         this.emit('change');
         this.emit('counterChange');
@@ -37,12 +57,16 @@ class SiteDataStore extends EventEmitter {
         }
     }
 
-    handleActions(action){
-        const type = action.type;
-        
+    handleActions(action){        
         switch(action.type) {
             case 'GET_ALL_SITES_STATUS': 
                 this.updateAllSitesData(action.data)
+                break;
+            case 'COLLECT_CHECKED_SITE':
+                this.saveCheckedSite(action.data)
+                break;
+            case 'REMOVE_CHECKED_SITE':
+                this.removeCheckedSite(action.data)
                 break;
         }
     }

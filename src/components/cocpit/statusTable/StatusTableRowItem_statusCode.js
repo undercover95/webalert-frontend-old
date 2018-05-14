@@ -1,11 +1,14 @@
 import React from 'react';
 
+import StatusTableRowItem_statusToolTip from './StatusTableRowItem_statusToolTip';
+
 export default class StatusTableRowItem_statusCode extends React.Component {
 
     render() {
         
         const status_code = this.props.status_code;
         const short_desc = this.props.short_desc;
+        const long_desc = this.props.long_desc;
 
         return (
             <td>
@@ -35,7 +38,7 @@ export default class StatusTableRowItem_statusCode extends React.Component {
                     content = (
                         <span>
                             <span className={'badge ' + badgeClass}>
-                                {(code == null || code == undefined ? '-' : code)}
+                                {(code == null || code == undefined || code == -1 || code == -2 ? '-' : code)}
                             </span>&nbsp;
                             {
                             <span className='status-code-description'>
@@ -44,6 +47,17 @@ export default class StatusTableRowItem_statusCode extends React.Component {
                                 </small>
                             </span>
                             }
+
+                            
+                            <span>
+                            {
+                                // popover help
+                                (code == null || code == undefined || short_desc == null || long_desc == null) ? '' : (
+                                    <StatusTableRowItem_statusToolTip id={this.props.site_id} title={code == -1 || code == -2 ? short_desc : (code + ' - ' + short_desc)} content={long_desc}  />
+                                )
+                            }
+                            </span>
+                            
                         </span>
                     )
                     return content;
