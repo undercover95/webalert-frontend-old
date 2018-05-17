@@ -23,20 +23,37 @@ export default class ReportsTableRow extends React.Component {
     getReportName() {
         let name = '';
         if(!this.checkIfSiteWorking(this.report_data['status_code'])) {
-            name = 'Strona '+this.report_data['url']+' przestała działać!';
+            name = <span className='not-working-text'><i className='fa fa-times-circle' aria-hidden='true'></i> Strona {this.report_data['url']} przestała działać!</span>;
         }
-        else name = 'Strona '+this.report_data['url']+' znów działa.';
+        else name = <span className='working-text'><i className='fa fa-check-circle' aria-hidden='true'></i> Strona {this.report_data['url']} znów działa.</span>;
         return name;
     }
 
-    render() {
+    getContent() {
+        let content = '';
+        if(this.checkIfSiteWorking(this.report_data['status_code'])) {
+            content = <div className='text-center'>
+                <h4>Aktualny kod odpowiedzi serwera: <strong>{this.report_data['status_code']}</strong></h4>
+                Awaria trwała od <strong>{this.report_data['breakdown_from']}</strong> do <strong>{this.report_data['breakdown_to']}</strong>.
+            </div>
+        } else {
+            let code = this.report_data['status_code']
+            content = <div className='text-center'>
+            <h4>Aktualny kod odpowiedzi serwera: <strong>{(code == -1 || code == -2) ? '-' : code}</strong></h4>
+            Awaria trwa od <strong>{this.report_data['breakdown_from']}</strong>.
+        </div>
+        }
+        return content
+    }
 
+    render() {
+        
         return (
             <tr>
                 <ReportsTableRowItem_name report_name={this.getReportName()} />
                 <ReportsTableRowItem_date report_time={this.report_data['generated_time']} />
                 <td>
-                    <ReportView title={this.getReportName()} content={'test'} />
+                    <ReportView report_id={this.report_data['id']} title={this.getReportName()} content={this.getContent()} />
                 </td>
             </tr>
         );

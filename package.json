@@ -78,6 +78,8 @@
     "react": "^15.0.0",
     "react-chartjs-2": "^2.7.2",
     "react-dom": "^15.0.0",
+    "react-modal-dialog": "^4.0.7",
+    "react-portal": "^4.1.5",
     "react-router-dom": "^4.2.2",
     "reactstrap": "^6.0.1",
     "sass-loader": "^7.0.1"

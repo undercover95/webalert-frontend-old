@@ -153,7 +153,7 @@ export function uncheckAllSites() {
     });
 }
 
-export function getReports(period) {
+export function getReports(period=24) {
     let data = qs.stringify({
         period: period
     });
@@ -169,5 +169,34 @@ export function getReports(period) {
     })
     .catch((err) => {
         console.log('AXIOS getReports FAILED', err)
+    });
+}
+
+export function receiveReport(report_id) {
+    let data = qs.stringify({
+        id: report_id
+    });
+
+    if(report_id == null || report_id == undefined || report_id == '') return;
+
+    axios.post('http://localhost/monitor_stron/engine/controller.php?action=receiveReport',data).then((res) => {
+        console.log(res.data.result);
+        getReports();
+    })
+    .catch((err) => {
+        console.log('AXIOS receiveReport FAILED', err)
+    });
+}
+
+export function getNewReportsCounter() {
+    axios.post('http://localhost/monitor_stron/engine/controller.php?action=getNewReportsCounter',data).then((res) => {
+        console.log(res.data.result);
+        Dispather.dispatch({
+            type: 'GET_NEW_REPORTS_COUNTER',
+            data: res
+        })
+    })
+    .catch((err) => {
+        console.log('AXIOS getNewReportsCounter FAILED', err)
     });
 }
