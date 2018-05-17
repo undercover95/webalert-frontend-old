@@ -57,6 +57,16 @@ class SiteDataStore extends EventEmitter {
         }
     }
 
+    checkAllSites() {
+        console.log('checkAllSites');
+        this.emit('checkAllSites');
+    }
+
+    uncheckAllSites() {
+        console.log('uncheckAllSites');
+        this.emit('uncheckAllSites');
+    }
+
     handleActions(action){        
         switch(action.type) {
             case 'GET_ALL_SITES_STATUS': 
@@ -67,6 +77,12 @@ class SiteDataStore extends EventEmitter {
                 break;
             case 'REMOVE_CHECKED_SITE':
                 this.removeCheckedSite(action.data)
+                break;
+            case 'CHECK_ALL_SITES':
+                this.checkAllSites();
+                break;
+            case 'UNCHECK_ALL_SITES':
+                this.uncheckAllSites();
                 break;
         }
     }

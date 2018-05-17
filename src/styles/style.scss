@@ -368,5 +368,10 @@ footer {
         thead {
             background-color: #fff;
         }
+        tbody {
+            tr.selected-row {
+                background-color: lighten(rgba($default-color, 0.25), 10%) !important;
+            }
+        }
     }
 }

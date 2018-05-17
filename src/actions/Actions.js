@@ -140,3 +140,34 @@ export function removeCheckedSite(site_id) {
         data: site_id
     });
 }
+
+export function checkAllSites() {
+    Dispather.dispatch({
+        type: 'CHECK_ALL_SITES'
+    });
+}
+
+export function uncheckAllSites() {
+    Dispather.dispatch({
+        type: 'UNCHECK_ALL_SITES'
+    });
+}
+
+export function getReports(period) {
+    let data = qs.stringify({
+        period: period
+    });
+
+    if(period == null || period == undefined || period == '') return;
+
+    axios.post('http://localhost/monitor_stron/engine/controller.php?action=getReports',data).then((res) => {
+        console.log('getReports',res.data)
+        Dispather.dispatch({
+            type: 'GET_REPORTS_DATA',
+            data: res
+        })
+    })
+    .catch((err) => {
+        console.log('AXIOS getReports FAILED', err)
+    });
+}

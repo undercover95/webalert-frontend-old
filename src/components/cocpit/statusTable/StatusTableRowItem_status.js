@@ -38,7 +38,7 @@ export default class StatusTableRowItem_status extends React.Component {
                                     <span className='not-working-text'>
                                         <i className='fa fa-times-circle' aria-hidden='true'></i> Nie działa
                                     </span><br/>
-                                    <small>Od: {last_working_time ? '' : 'Nie określono'}</small>
+                                    <small>Od: {last_working_time ? last_working_time : 'Nie określono'}</small>
                                 </div>
                             )
                         } else {

@@ -16,6 +16,7 @@ import TopBar from './TopBar';
 import Cocpit from './cocpit/Cocpit';
 import AddPage from './addPage/AddPage';
 import SiteStats from './siteStats/SiteStats';
+import Reports from './reports/Reports';
 
 require('styles/style.scss');
 
@@ -31,6 +32,7 @@ class Main extends React.Component {
               <Route exact path='/' component={Cocpit} />
               <Route path='/addPage' component={AddPage} />
               <Route path='/siteStats/:url' component={SiteStats} />
+              <Route path='/reports' component={Reports} />
               <Route component={Cocpit} />
             </Switch>
           </div>

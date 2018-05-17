@@ -52,7 +52,7 @@ class TopBar extends React.Component {
                             </Link>
                         </NavItem>
                         <NavItem>
-                            <Link to='#' activeClassName='active' className='nav-link'>
+                            <Link to='/reports' activeClassName='active' className='nav-link'>
                                 <i className='fa fa-bullhorn' aria-hidden='true'></i> Raporty <span className='badge badge-danger'>5</span>
                             </Link>
                         </NavItem>

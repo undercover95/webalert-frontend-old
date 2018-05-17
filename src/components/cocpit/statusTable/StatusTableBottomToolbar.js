@@ -18,7 +18,7 @@ export default class StatusTableBottomToolbar extends React.Component {
         this.setState({
             checkedSites: SiteDataStore.getCheckedSites()
         });
-        console.log("data", this.state.checkedSites);
+        console.log('checked sites', this.state.checkedSites);
     }
 
     componentWillMount() {
@@ -58,6 +58,16 @@ export default class StatusTableBottomToolbar extends React.Component {
             
     }
 
+    handleCheckBoxChange(event) {
+        const isChecked = event.target.checked;
+        if(isChecked){
+            Actions.checkAllSites();
+        }
+        else {
+            Actions.uncheckAllSites();
+        }
+    }
+
     render() {
 
         const beforeSend = this.props.beforeSend;
@@ -66,13 +76,13 @@ export default class StatusTableBottomToolbar extends React.Component {
         return (
             <div className='row' id='bottom-table-toolbar'>
                 <div className='col-8'>
-                    <form id='selected-items-action-form' className='form-inline' onSubmit={this.handleSubmit}>
-                        <div className='form-group mr-5'>
-                            <input className='form-control form-control-sm' id='selectAll' name='select-all' type='checkbox'/>
-                            <label htmlFor='selectAll' className='ml-1'>
-                                Zaznacz wszystkie
-                            </label>
-                        </div>
+                    <div className='form-inline'>
+                        <input onClick={this.handleCheckBoxChange.bind(this)} id='selectAll' name='select-all' type='checkbox'/>
+                        <label htmlFor='selectAll' className='ml-1 mr-5'>
+                            Zaznacz wszystkie
+                        </label>
+                        
+                        <form id='selected-items-action-form' className='form-inline' onSubmit={this.handleSubmit}>
                         <div className='form-group mr-2'>
                             <label htmlFor='exampleSelect2' className='mr-2'>Z zaznaczonymi:</label>
                             <select name='operation' className='form-control form-control-sm styled-select' id='exampleSelect2'>
@@ -83,6 +93,7 @@ export default class StatusTableBottomToolbar extends React.Component {
                         </div>
                         <button className='btn btn-sm badge-primary' type='submit'>Potwierdź</button>
                     </form>
+                    </div>
                 </div>
                 <div className='col-4 text-right'>
                     <button className='btn btn-sm btn-info' onClick={updateData} disabled={beforeSend == '' ? false : true}>
