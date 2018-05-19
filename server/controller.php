@@ -73,6 +73,22 @@ if(isset($_GET['action']) && !empty($_GET['action'])) {
         }
     }
 
+    else if($action == 'getReports') {
+        if (isset($_POST['period']) && !empty($_POST['period'])) {
+            return $ctrl->getReports($_POST['period']);
+        }
+    }
+
+    else if($action == 'receiveReport') {
+        if (isset($_POST['id']) && !empty($_POST['id'])) {
+            return $ctrl->receiveReport($_POST['id']);
+        }
+    }
+
+    else if($action == 'getNewReportsCounter') {
+        return $ctrl->getNewReportsCounter();
+    }
+
     else {
         echo json_encode(array("err"=>"Error - Unknown action"));
     }

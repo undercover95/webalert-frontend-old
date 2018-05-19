@@ -143,8 +143,9 @@ def check_if_working(code):
 
 def get_http_response(url, timeout=10):
 
-    if str(url[0:7]) != "http://":
-        url = 'http://' + str(url)
+    if str(url[0:8]) != "https://":
+        if str(url[0:7]) != "http://":
+            url = 'http://' + str(url)
 
     code = -2  # unknown error
     time = 0.00
@@ -253,37 +254,63 @@ def update_pages_status(site_id=None):
         else:
             last_status_code = row['status_code']
 
+
+
+
         if check_if_working(code) != 0:
             # website not working
             print "website not working"
+
+            
             if check_if_working(last_status_code) == 0:
                 # not working now, but it worked last time
                 print "not working now, but it worked last time"
+
                 update_pages_sql = "INSERT INTO `pages_status` (`site_id`, `status_code`, `last_checked`, `last_working_time`) VALUES (%s, %s, now(), now())" % (
                     row['site_id'], code)
 
-                get_code_desc_sql = "SELECT * FROM `status_codes` WHERE `status_code`=%s" % code
-
                 try:
-                    cursor.execute(get_code_desc_sql)
+                    cursor.execute(update_pages_sql)
+                    print "Updating status of %s with code %s completed." % (row['url'], code)
                 except mysql.connector.errors.Error as err:
+                    print "Cannot update page status of '" + row['url'] + "'."
                     print(err)
-                    sys.exit()
+                    pass
+
+
+
+
+                #get_code_desc_sql = "SELECT * FROM `status_codes` WHERE `status_code`=%s" % code
+
+                #try:
+                #    cursor.execute(get_code_desc_sql)
+                #except mysql.connector.errors.Error as err:
+                #    print(err)
+                #    sys.exit()
 
                 # get HTTP Code description
-                get_code_desc_row = cursor.fetchall()
+                #get_code_desc_row = cursor.fetchall()
 
-                code_description = {
-                    'code_description_short':
-                    get_code_desc_row[0]['short_desc'],
-                    'code_description_long': get_code_desc_row[0]['long_desc']
-                }
+                #code_description = {
+                #    'code_description_short':
+                #    get_code_desc_row[0]['short_desc'],
+                #    'code_description_long': get_code_desc_row[0]['long_desc']
+                #}
 
                 #print "send email about not-working for site "+row['url_adress']
                 # FAIL
                 #mailer.prepare_failure_msg_and_send(row['url'], code, code_description, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
-            if check_if_working(last_status_code) != 0:
+
+                generate_report_sql = "INSERT INTO `reports`(`url`, `breakdown_from`, `status_code`) VALUES('%s', '%s', '%s')" % (row['url'], datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), code)
+
+                try:
+                    cursor.execute(generate_report_sql)
+                except mysql.connector.errors.Error as err:
+                    print(err)
+                    sys.exit()
+
+            elif check_if_working(last_status_code) != 0:
                 # not working now and didn't worked last time
                 print "not working now and didn't worked last time"
 
@@ -295,7 +322,29 @@ def update_pages_status(site_id=None):
                     update_pages_sql = "INSERT INTO `pages_status` (`site_id`, `status_code`, `last_checked`) VALUES (%s, %s, now())" % (
                         row['site_id'], code)
 
+                try:
+                    cursor.execute(update_pages_sql)
+                    print "Updating status of %s with code %s completed." % (row['url'], code)
+                except mysql.connector.errors.Error as err:
+                    print "Cannot update page status of '" + row['url'] + "'."
+                    print(err)
+                    pass
+
         else:
+            update_pages_sql = "INSERT INTO `pages_status` (`site_id`, `status_code`, `last_checked`, `last_working_time`,  `last_response_time`) VALUES (%s, %s, now(), now(), %s)" % (
+            row['site_id'], code, time)
+
+
+            try:
+                cursor.execute(update_pages_sql)
+                print "Updating status of %s with code %s completed." % (row['url'], code)
+            except mysql.connector.errors.Error as err:
+                print "Cannot update page status of '" + row['url'] + "'."
+                print(err)
+                pass
+
+
+
             if check_if_working(last_status_code) != 0:
                 # working now, but it didn't worked last time
                 print "working now, but it didn't worked last time"
@@ -303,19 +352,18 @@ def update_pages_status(site_id=None):
                 
                 # FAIL
                 #mailer.prepare_success_msg_and_send(row['url'], row['last_working_time'], datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                
+                
+                generate_report_sql = "INSERT INTO `reports`(`url`, `breakdown_from`, `breakdown_to`, `status_code`) VALUES('%s', '%s', '%s', '%s')" % (row['url'], row['last_working_time'], datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), code)
 
-            update_pages_sql = "INSERT INTO `pages_status` (`site_id`, `status_code`, `last_checked`, `last_working_time`,  `last_response_time`) VALUES (%s, %s, now(), now(), %s)" % (
-                row['site_id'], code, time)
+                try:
+                    cursor.execute(generate_report_sql)
+                except mysql.connector.errors.Error as err:
+                    print(err)
+                    sys.exit()
 
-        try:
-            #print "url: %s, sql: %s" % (row['url'], update_pages_sql)
-            cursor.execute(update_pages_sql)
-            print "Updating status of %s with code %s completed." % (row['url'], code)
-            #print
-        except mysql.connector.errors.Error as err:
-            print "Cannot update page status of '" + row['url'] + "'."
-            print(err)
-            pass
+
+
 
     db.conn.commit()
     print "Updating all pages completed"

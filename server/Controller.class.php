@@ -196,5 +196,61 @@ class Controller {
 
         echo json_encode($res);
     }
+
+    function getReports($period) {
+        $getReportsSql = "SELECT * FROM `reports` WHERE `generated_time`>=DATE_SUB(NOW(),INTERVAL $period HOUR) ORDER BY `generated_time` DESC";
+
+        $res = array();
+        $rows = array();
+        
+        if($getReportsRes = $this->db_connection->query($getReportsSql)) {
+            if ($getReportsRes->num_rows > 0) {
+
+                while($getReportsRow = $getReportsRes->fetch_assoc()){
+                    $rows[] = $getReportsRow;
+                }
+                
+            } else $res = array('result' => []);
+        } else $res = array('result' => false);
+
+        $res['result'] = $rows;
+
+        echo json_encode($res);
+    }
+
+    function getNewReportsCount() {
+        $getNewReportsCounterSql = "SELECT count(*) as `counter` FROM `reports` WHERE `is_seen`=0";
+
+        $res = array();
+        $rows = array();
+        
+        if($getNewReportsCounterRes = $this->db_connection->query($getNewReportsCounterSql)) {
+            if ($getNewReportsCounterRes->num_rows > 0) {
+
+                while($getNewReportsCounterRow = $getNewReportsCounterRes->fetch_assoc()){
+                    $rows[] = $getReportsRow;
+                }
+                
+            } else $res = array('result' => []);
+        } else $res = array('result' => false);
+
+        $res['result'] = $rows;
+
+        echo json_encode($res);
+    }
+
+    function receiveReport($report_id) {
+        $receiveReportSql = "UPDATE `reports` SET `is_seen`=1 WHERE `id`=$report_id";
+
+        $res = array();
+        
+        if($receiveReportRes = $this->db_connection->query($receiveReportSql)) {
+            ;
+        } else $res = array('result' => false);
+
+        $res['result'] = true;
+
+        echo json_encode($res);
+    }
 }
 ?>
