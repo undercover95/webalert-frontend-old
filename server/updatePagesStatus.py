@@ -11,9 +11,9 @@ import datetime
 import mysql.connector
 from mysql.connector import errorcode
 
-#import sendgrid
+import sendgrid
 import os
-#from sendgrid.helpers.mail import *
+from sendgrid.helpers.mail import *
 
 try:
     # Python 3
@@ -280,26 +280,26 @@ def update_pages_status(site_id=None):
 
 
 
-                #get_code_desc_sql = "SELECT * FROM `status_codes` WHERE `status_code`=%s" % code
+                get_code_desc_sql = "SELECT * FROM `status_codes` WHERE `status_code`=%s" % code
 
-                #try:
-                #    cursor.execute(get_code_desc_sql)
-                #except mysql.connector.errors.Error as err:
-                #    print(err)
-                #    sys.exit()
+                try:
+                    cursor.execute(get_code_desc_sql)
+                except mysql.connector.errors.Error as err:
+                    print(err)
+                    sys.exit()
 
                 # get HTTP Code description
-                #get_code_desc_row = cursor.fetchall()
+                get_code_desc_row = cursor.fetchall()
 
-                #code_description = {
-                #    'code_description_short':
-                #    get_code_desc_row[0]['short_desc'],
-                #    'code_description_long': get_code_desc_row[0]['long_desc']
-                #}
+                code_description = {
+                    'code_description_short':
+                    get_code_desc_row[0]['short_desc'],
+                    'code_description_long': get_code_desc_row[0]['long_desc']
+                }
 
-                #print "send email about not-working for site "+row['url_adress']
-                # FAIL
-                #mailer.prepare_failure_msg_and_send(row['url'], code, code_description, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                print "send email about not-working for site "+row['url_adress']
+
+                mailer.prepare_failure_msg_and_send(row['url'], code, code_description, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
 
                 generate_report_sql = "INSERT INTO `reports`(`url`, `breakdown_from`, `status_code`) VALUES('%s', '%s', '%s')" % (row['url'], datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), code)
@@ -350,8 +350,7 @@ def update_pages_status(site_id=None):
                 print "working now, but it didn't worked last time"
                 print "send email about working for site "+row['url']
                 
-                # FAIL
-                #mailer.prepare_success_msg_and_send(row['url'], row['last_working_time'], datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+                mailer.prepare_success_msg_and_send(row['url'], row['last_working_time'], datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
                 
                 
                 generate_report_sql = "INSERT INTO `reports`(`url`, `breakdown_from`, `breakdown_to`, `status_code`) VALUES('%s', '%s', '%s', '%s')" % (row['url'], row['last_working_time'], datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), code)
@@ -397,7 +396,7 @@ if __name__ == '__main__':
             # print "'%s' nie jest poprawnym interwalem dla opcji -p!\nInterwal musi byc liczba sekund." % val
             # sys.exit()
 
-    db = Database('root', '1995', 'localhost', 'page_monitor_db')
+    db = Database('admin', '1995', 'mysql', 'page_monitor_db')
     mailer = Mailer('mbularz95@interia.pl')
 
     if not interval is None:

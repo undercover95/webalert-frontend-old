@@ -68,8 +68,8 @@ if(isset($_GET['action']) && !empty($_GET['action'])) {
     }
 
     else if ($action == 'getResponseTimeForPeriod') {
-        if (isset($_POST['period']) && !empty($_POST['period']) && isset($_POST['url']) && !empty($_POST['url'])) {
-            return $ctrl->getResponseTimeForPeriod($_POST['period'], $_POST['url']);
+        if (isset($_POST['period']) && !empty($_POST['period']) && isset($_POST['id']) && !empty($_POST['id'])) {
+            return $ctrl->getResponseTimeForPeriod($_POST['period'], $_POST['id']);
         }
     }
 
@@ -89,8 +89,12 @@ if(isset($_GET['action']) && !empty($_GET['action'])) {
         return $ctrl->getNewReportsCounter();
     }
 
+    else if($action == 'runCheckingStatusPagesPeriodically') {
+        return $ctrl->refreshAllPagesStatusPeriodically();
+    }
+
     else {
-        echo json_encode(array("err"=>"Error - Unknown action"));
+        echo json_encode(array("err"=>"Error - Unknown action: $action"));
     }
 }
 else {

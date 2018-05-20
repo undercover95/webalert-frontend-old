@@ -53,7 +53,7 @@ CREATE TABLE `pages_status` (
   `site_id` int(11) NOT NULL,
   `status_code` int(11) DEFAULT NULL,
   `last_checked` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `last_working_time` timestamp NULL DEFAULT NULL,
+  `last_working_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `last_response_time` float(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

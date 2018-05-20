@@ -10,14 +10,21 @@ class Controller {
         $this->db_connection = $conn;
     }
 
+    function refreshAllPagesStatusPeriodically($period = 10) {
+        $command = '/usr/bin/python2 updatePagesStatus.py -p '.$period.' 2>&1';
+        $output = exec($command);
+        return json_encode(array("output" => $output));
+        //return;
+    }
+
     function refreshAllPagesStatus() {    
-        $command = '/usr/bin/python2 /home/michal/monitor_stron/engine/updatePagesStatus.py 2>&1';
+        $command = '/usr/bin/python2 updatePagesStatus.py 2>&1';
         $output = exec($command);
         echo json_encode(array("output" => $output));
     }
 
     function refreshSinglePageStatus($site_id) {
-        $command = '/usr/bin/python2 /home/michal/monitor_stron/engine/updatePagesStatus.py '.$site_id.' 2>&1';
+        $command = '/usr/bin/python2 updatePagesStatus.py '.$site_id.' 2>&1';
         $output = '';
         exec($command, $output);
         echo json_encode(array("output" => $output));
@@ -176,8 +183,8 @@ class Controller {
         return true;    
     }
 
-    function getResponseTimeForPeriod($period, $url) {
-        $getResponseTimeSql = "SELECT * FROM `pages_status` LEFT JOIN `pages` ON `id`=`site_id` WHERE `pages`.`url`='$url' AND `pages_status`.`last_checked`>=DATE_SUB(NOW(),INTERVAL $period HOUR)";
+    function getResponseTimeForPeriod($period, $id) {
+        $getResponseTimeSql = "SELECT * FROM `pages_status` LEFT JOIN `pages` ON `pages`.`id`=`site_id` WHERE `pages`.`id`='$id' AND `pages_status`.`last_checked`>=DATE_SUB(NOW(),INTERVAL $period HOUR)";
 
         $res = array();
         $rows = array();
@@ -193,7 +200,6 @@ class Controller {
         } else $res = array('result' => false);
 
         $res['result'] = $rows;
-
         echo json_encode($res);
     }
 
