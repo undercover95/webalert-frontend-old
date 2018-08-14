@@ -3,14 +3,23 @@ import ResponseStore from 'stores/ResponseStore';
 import * as Actions from 'actions/Actions';
 
 import {
-  NavLink as Link
+  NavLink as Link,
+  Redirect
 } from 'react-router-dom';
+
+import Register from 'components/registerPage/Register';
 
 
 export default class Login extends React.Component {
 
   componentDidMount() {
     document.title = 'Logowanie | Monitor stron internetowych'
+
+    if(localStorage.getItem('logged')) {
+      this.setState({
+        redirect: true
+      })
+    }
   }
 
   constructor() {
@@ -21,7 +30,8 @@ export default class Login extends React.Component {
 
     this.state = {
       beforeSend: '',
-      responses: {}
+      responses: {},
+      redirect: false
     }
   }
 
@@ -31,11 +41,17 @@ export default class Login extends React.Component {
         beforeSend: '',
         responses: ResponseStore.getResponse('loginUserResponse')
       });
-    }, 1000);
+    }, 500);
   }
 
   redirectAfterLogin() {
-    this.props.history.push("/");
+    setTimeout(() => {
+      this.setState({
+        beforeSend: '',
+        responses: {},
+        redirect: true
+      });
+    }, 500);
   }
 
   componentWillMount() {
@@ -63,6 +79,10 @@ export default class Login extends React.Component {
 
     let beforeSend = this.state.beforeSend;
     let responses = this.state.responses;
+
+    if (this.state.redirect) {
+      return <Redirect to="/" />
+    }
 
     return (
       <div>

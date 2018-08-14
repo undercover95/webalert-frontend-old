@@ -245,8 +245,6 @@ export function loginUser(userData) {
   axios.post(apihost + '/login', data, getHeaders())
     .then((res) => {
 
-
-
       Dispather.dispatch({
         type: 'LOGIN_REQUEST_COMPLETED',
         data: res

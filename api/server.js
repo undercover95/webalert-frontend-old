@@ -78,9 +78,11 @@ app.post('/login', (req, res) => {
           // password ok
           console.log('passwd ok')
 
-          jwt.sign({user}, 'secretkey', {expiresIn: '2h'}, (err, token) => {
-            res.json({token});
-          });
+          jwt.sign(
+              {user}, 'secretkey',
+              (err, token) => {  // fix expires and localstorage
+                res.json({token});
+              });
 
         } else {
           console.log('passwd wrong')

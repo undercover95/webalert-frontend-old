@@ -46,6 +46,7 @@ class ResponseStore extends EventEmitter {
         if(response.data.token != undefined) {
           // logged
           localStorage.setItem('authToken', response.data.token);
+          localStorage.setItem('logged', true);
           this.emit('userLoginSuccess');
         }
 

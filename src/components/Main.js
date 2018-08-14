@@ -35,25 +35,25 @@ require('styles/style.scss');
 
 class Main extends React.Component {
 
-  isLogged = false;
-
-  componentDidMount() {
-
-
-  }
 
   render() {
+
     return (
       <Router>
-        <Container fluid='true'>
+        <Container fluid={true}>
+
+
           <Row>
             <Col>
               <TopBar/>
             </Col>
           </Row>
-          <Sidebar/>
-          <Row className='content'>
-            <Col className='mb-4'>
+
+          <Row>
+            <Col md={2}>
+              <Sidebar/>
+            </Col>
+            <Col md={10}>
               <Switch>
                 <PrivateRoute exact path='/' component={Cocpit} />
                 <PrivateRoute path='/addPage' component={AddPage} />
@@ -62,12 +62,11 @@ class Main extends React.Component {
 
                 <Route path='/login' component={Login} />
                 <Route path='/register' component={Register} />
-                <Route render={
-                  () => <h3>Page not found!</h3>
-                } />
               </Switch>
             </Col>
-        </Row>
+          </Row>
+
+
         </Container>
       </Router>
     );
