@@ -54,7 +54,6 @@ export default class StatusTableRowItem_checkBox extends React.Component {
     }
 
     render() {
-        const handleCheckBoxChange = this.props.handleCheckBoxChange;
         return (
             <td>
                 <input onClick={this.handleCheckBoxChange.bind(this)} type='checkbox' checked={this.state.isChecked ? true : false}/>

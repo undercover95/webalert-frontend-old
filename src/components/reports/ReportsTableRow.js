@@ -1,8 +1,5 @@
 import React from 'react';
 
-import * as Actions from 'actions/Actions';
-import ReportsDataStore from 'stores/ReportsDataStore';
-
 import ReportsTableRowItem_name from './ReportsTableRowItem_name';
 import ReportsTableRowItem_date from './ReportsTableRowItem_date';
 import ReportView from './ReportView';
@@ -47,7 +44,7 @@ export default class ReportsTableRow extends React.Component {
     }
 
     render() {
-        
+
         return (
             <tr>
                 <ReportsTableRowItem_name report_name={this.getReportName()} />
@@ -59,4 +56,3 @@ export default class ReportsTableRow extends React.Component {
         );
     }
 }
-  

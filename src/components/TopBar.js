@@ -1,5 +1,5 @@
 import React from 'react';
-
+import * as Actions from 'actions/Actions';
 import {
     Collapse,
     Navbar,
@@ -7,11 +7,8 @@ import {
     NavbarBrand,
     Nav,
     NavItem,
-    NavLink,
-    UncontrolledDropdown,
-    DropdownToggle,
-    DropdownMenu,
-    DropdownItem } from 'reactstrap';
+    Button
+} from 'reactstrap';
 
 import {
     NavLink as Link
@@ -20,7 +17,7 @@ import {
 class TopBar extends React.Component {
     constructor() {
         super();
-    
+
         this.toggle = this.toggle.bind(this);
         this.state = {
           isOpen: false
@@ -34,38 +31,33 @@ class TopBar extends React.Component {
 
     render() {
         return (
-            <Navbar color="light" light expand="md" className='mb-3'>
+            <Navbar color='dark' dark expand='md'>
                 <NavbarBrand id='brand'>Monitor stron internetowych
                 </NavbarBrand>
 
                 <NavbarToggler onClick={this.toggle} />
                 <Collapse isOpen={this.state.isOpen} navbar>
-                    <Nav className="mr-auto" navbar>
-                        <NavItem>
-                            <Link exact to='/' activeClassName='active' className='nav-link'>
-                            <i className='fa fa-home' aria-hidden='true'></i> Kokpit
-                            </Link>
-                        </NavItem>
-                        <NavItem>
-                            <Link to='/addPage' activeClassName='active' className='nav-link'>
-                                <i className='fa fa-plus-circle' aria-hidden='true'></i> Dodaj witrynę
-                            </Link>
-                        </NavItem>
-                        <NavItem>
-                            <Link to='/reports' activeClassName='active' className='nav-link'>
-                                <i className='fa fa-bullhorn' aria-hidden='true'></i> Raporty
-                            </Link>
-                        </NavItem>
-                    </Nav>
-                    <Nav className='ml-auto'>
-                        <span className="navbar-text">
-                            Zalogowano jako: <i className='fa fa-user-circle' aria-hidden='true'></i> User
-                        </span>
+                    <Nav className='ml-auto' navbar>
+                      <NavItem>
+                        <Link to='/login' activeClassName='active' className='nav-link'>
+                          <i className='fa fa-sign-in' aria-hidden='true'></i> Zaloguj się
+                        </Link>
+                      </NavItem>
+                      <NavItem>
+                        <Button color="link" className='nav-link' onClick={() => Actions.logoutUser()}>
+                          <i className='fa fa-sign-in' aria-hidden='true'></i> Wyloguj się
+                        </Button>
+                      </NavItem>
+                      <NavItem>
+                        <Link to='/register' activeClassName='active' className='nav-link'>
+                          <i className='fa fa-user-plus' aria-hidden='true'></i> Zarejestruj się
+                        </Link>
+                      </NavItem>
                     </Nav>
                 </Collapse>
             </Navbar>
         );
     }
 }
-  
+
 export default TopBar;

@@ -3,6 +3,8 @@ import React from 'react';
 import SiteDataStore from 'stores/SiteDataStore';
 import * as Actions from 'actions/Actions';
 
+import { Row, Col, Button, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
+
 export default class StatusTableBottomToolbar extends React.Component {
 
     constructor() {
@@ -55,7 +57,7 @@ export default class StatusTableBottomToolbar extends React.Component {
                 }
                 break;
         }
-            
+
     }
 
     handleCheckBoxChange(event) {
@@ -74,33 +76,31 @@ export default class StatusTableBottomToolbar extends React.Component {
         const updateData = this.props.updateData;
 
         return (
-            <div className='row' id='bottom-table-toolbar'>
-                <div className='col-8'>
+            <Row id='bottom-table-toolbar'>
+                <Col md={8}>
                     <div className='form-inline'>
                         <input onClick={this.handleCheckBoxChange.bind(this)} id='selectAll' name='select-all' type='checkbox'/>
-                        <label htmlFor='selectAll' className='ml-1 mr-5'>
-                            Zaznacz wszystkie
-                        </label>
-                        
-                        <form id='selected-items-action-form' className='form-inline' onSubmit={this.handleSubmit}>
-                        <div className='form-group mr-2'>
-                            <label htmlFor='exampleSelect2' className='mr-2'>Z zaznaczonymi:</label>
-                            <select name='operation' className='form-control form-control-sm styled-select' id='exampleSelect2'>
+                        <Label for="selectAll" className='ml-1 mr-5'>Zaznacz wszystkie</Label>
+
+                        <Form className='form-inline' onSubmit={this.handleSubmit}>
+                        <FormGroup className='mr-2'>
+                            <Label for='selectOperation' className='mr-2'>Z zaznaczonymi:</Label>
+                              <Input type="select" name="operation" id="selectOperation" className='styled-select'>
                                 <option value='0'>Wybierz opcję</option>
                                 <option value='1'>Odśwież zaznaczone</option>
                                 <option value='2'>Usuń zaznaczone</option>
-                            </select>
-                        </div>
-                        <button className='btn btn-sm badge-primary' type='submit'>Potwierdź</button>
-                    </form>
+                              </Input>
+                        </FormGroup>
+                        <Button color='primary' size='sm'>Potwierdź</Button>
+                    </Form>
                     </div>
-                </div>
-                <div className='col-4 text-right'>
-                    <button className='btn btn-sm btn-info' onClick={updateData} disabled={beforeSend == '' ? false : true}>
+                </Col>
+                <Col md={4} className='text-right'>
+                    <Button color='info' size='sm' onClick={() => updateData()} disabled={beforeSend == '' ? false : true}>
                             {beforeSend == '' ? <span><i className='fa fa-refresh' aria-hidden='true'></i> Odśwież stan wszystkich witryn</span> : beforeSend}
-                    </button>
-                </div>
-            </div>
+                    </Button>
+                </Col>
+            </Row>
         );
     }
 }

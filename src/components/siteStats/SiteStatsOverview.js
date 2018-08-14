@@ -1,35 +1,61 @@
 import React from 'react';
-import SiteStatsOverviewItem from './SiteStatsOverviewItem';
 
 export default class SiteStatsOverview extends React.Component {
 
     getAverageResponseTime() {
         const data = this.props.data;
-        
-        let sum = new Number(0.0);
+
+        let sum = 0.0;
         data.map(row => {
             sum = +sum + +row['last_response_time']
         });
 
-        console.log('suma', sum);
-        return (sum / data.length).toFixed(3);
+        return (sum / data.length).toFixed(2);
+    }
+
+    getMinMaxResponseTime() {
+
+      let currentMin = 99999999999;
+      let currentMax = 0;
+
+      this.props.data.map(row => {
+        let currentVal = row['last_response_time']
+
+        if(currentVal > currentMax) currentMax = currentVal
+        else if(currentVal < currentMin) currentMin = currentVal
+      });
+
+      return {
+        'max': currentMax,
+        'min': currentMin
+      }
     }
 
     render() {
-        return (
-            <div>
-                <div className='row mb-3'>
-                    <div className='col-sm-4'>
-                        <SiteStatsOverviewItem val={this.getAverageResponseTime()} desc='Średni czas odpowiedzi serwera' icon='fa-clock-o'/>
-                    </div>
-                    <div className='col-sm-4'>
-                        <SiteStatsOverviewItem val={0} desc='Działa nieprzerwanie' icon='fa-check-circle'/>
-                    </div>
-                    <div className='col-sm-4'>
-                        <SiteStatsOverviewItem val={0} desc='Czas awarii' icon='fa-times-circle'/>
-                    </div>
-                </div>
-            </div>
-        )
+      const minmaxTime = this.getMinMaxResponseTime()
+      const avgTime = this.getAverageResponseTime()
+      return (
+        <div>
+          <table className={'table table-hover'} id={'overview-table'}>
+            <tbody style={{'textAlign':'center'}}>
+              <tr className={'overview-header'}>
+                <td colSpan={2}><i className='fa fa-clock-o' aria-hidden='true'></i>  Czas odpowiedzi serwera</td>
+              </tr>
+              <tr className={'overview-response-time'}>
+                <td>Najkrótszy</td>
+                <td>{minmaxTime.min} s</td>
+              </tr>
+              <tr className={'overview-response-time'}>
+                <td>Najdłuższy</td>
+                <td>{minmaxTime.max} s</td>
+              </tr>
+              <tr className={'overview-response-time'}>
+                <td>Średni</td>
+                <td>{avgTime} s</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      )
     }
 }

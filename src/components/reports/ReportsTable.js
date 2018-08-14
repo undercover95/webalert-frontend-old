@@ -1,11 +1,4 @@
 import React from 'react';
-
-
-
-import {
-    NavLink as Link
-  } from 'react-router-dom';
-
 import ReportsTableRow from './ReportsTableRow';
 
 export default class ReportsTable extends React.Component {
@@ -16,7 +9,7 @@ export default class ReportsTable extends React.Component {
         if(this.props.data.length == 0) emptyData = true;
 
         return (
-            <div>             
+            <div>
                 <div id='status-table-wrapper' className='table-responsive'>
                     <table className='table table-striped'>
                         <thead>

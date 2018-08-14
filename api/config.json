@@ -1,0 +1,8 @@
+{
+    "db_props": {
+        "hostname": "172.17.0.2",
+        "username": "admin",
+        "password": "1995",
+        "db_name": "page_monitor_db"
+    }
+}

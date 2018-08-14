@@ -18,5 +18,5 @@ class OverviewItem extends React.Component {
         );
     }
   }
-  
+
 export default OverviewItem;

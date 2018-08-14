@@ -30,8 +30,8 @@ export default class SiteStats extends React.Component {
     }
 
     componentDidMount() {
-        document.title = 'Statystyki witryny ' + this.props.match.params.url + ' | Monitor stron internetowych';
-        Actions.getResponseTimeData(this.props.match.params.url, this.period);
+        document.title = 'Statystyki witryny ' + this.props.match.params.id + ' | Monitor stron internetowych';
+        Actions.getResponseTimeData(this.props.match.params.id, this.period);
     }
 
     getData() {
@@ -64,20 +64,20 @@ export default class SiteStats extends React.Component {
             beforeSend: <div className='mt-3'><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Wczytuję dane...</div>
         })
 
-        Actions.getResponseTimeData(this.props.match.params.url, this.period);
+        Actions.getResponseTimeData(this.props.match.params.id, this.period);
     }
 
     render() {
-        const site_url = this.props.match.params.url;
-        //console.log('site_url',site_url);
+        const site_id = this.props.match.params.id;
+
         let emptyData = false;
 
         if(this.state.data.length == 0) emptyData = true;
 
         return (
             <div>
-                <SiteStatsTitle title='Statystyki witryny' sitename={site_url} icon='fa-pie-chart'/>
-                
+                <SiteStatsTitle title='Statystyki witryny' sitename={"test"} icon='fa-pie-chart'/>
+
                 <div className='card'>
                     <div className='card-header'>
                         <div className='form-inline'>
@@ -107,7 +107,7 @@ export default class SiteStats extends React.Component {
                                     <div>
                                         <h4><i className='fa fa-check-circle' aria-hidden='true'></i> Podsumowanie <small>z ostatnich <strong>{this.period}</strong> godzin(y)</small></h4>
                                         <SiteStatsOverview data={this.state.data} />
-                                
+
                                         <h4><i className='fa fa-clock-o' aria-hidden='true'></i> Czas odpowiedzi serwera <small>z ostatnich <strong>{this.period}</strong> godzin(y)</small></h4>
                                         <TimeResponseChart data={this.getDataForChart()} />
                                     </div>

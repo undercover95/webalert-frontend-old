@@ -34,9 +34,30 @@ class ResponseStore extends EventEmitter {
         this.emit('addSingleSiteResponse');
     }
 
+    serviceResultOfRegister(response) {
+        console.log('response serviceResultOfRegister:',response.data);
+        this.requestResponses.registerUserResponse = response.data;
+        this.emit('registerUserResponse');
+    }
+
+    serviceResultOfLogin(response) {
+        console.log('response serviceResultOfLogin:',response.data);
+
+        if(response.data.token != undefined) {
+          // logged
+          localStorage.setItem('authToken', response.data.token);
+          this.emit('userLoginSuccess');
+        }
+
+        else {
+          this.requestResponses.loginUserResponse = response.data;
+          this.emit('loginUserResponse');
+        }
+    }
+
     handleActions(action){
         const type = action.type;
-        
+
         switch(type) {
             case 'ADD_SINGLE_SITE':
                 this.serviceResultOfAddingSingleSite(action.response.data, action.siteName)
@@ -44,6 +65,12 @@ class ResponseStore extends EventEmitter {
             case 'ADD_MULTIPLE_SITE':
                 this.serviceResultOfAddingMultipleSites(action.errors.data, action.addedSitesCount)
                 break;
+            case 'REGISTER_REQUEST_COMPLETED':
+                this.serviceResultOfRegister(action.data)
+                break;
+          case 'LOGIN_REQUEST_COMPLETED':
+            this.serviceResultOfLogin(action.data)
+            break;
         }
     }
 }

@@ -70,7 +70,7 @@ class StatusTableRow extends React.Component {
     }
 
     render() {
-        
+
         const site_data = this.props.site_data;
 
         return (
@@ -83,10 +83,10 @@ class StatusTableRow extends React.Component {
                 <StatusTableRowItem_status status_code={site_data['status_code']} last_working_time={site_data['last_working_time']} />
                 <StatusTableRowItem_responseTime last_response_time={site_data['last_response_time']}/>
                 <StatusTableRowItem_lastChecked isRefreshing={this.state.isRefreshing} last_checked={site_data['last_checked']}/>
-                <StatusTableRowItem_buttons url={site_data['url']} isRefreshing={this.state.isRefreshing} updateSingleSiteStatusFn={this.updateSingleSiteStatus.bind(this)} removeSiteFn={this.removeSite.bind(this)} />
+                <StatusTableRowItem_buttons site_id={site_data['site_id']} isRefreshing={this.state.isRefreshing} updateSingleSiteStatusFn={this.updateSingleSiteStatus.bind(this)} removeSiteFn={this.removeSite.bind(this)} />
             </tr>
         );
     }
 }
-  
+
 export default StatusTableRow;

@@ -11,7 +11,7 @@ import StatusTableRow from './StatusTableRow';
 import StatusTableBottomToolbar from './StatusTableBottomToolbar';
 
 class StatusTable extends React.Component {
-    
+
     interval = 0;
 
     constructor() {
@@ -35,7 +35,7 @@ class StatusTable extends React.Component {
     }
 
     getData() {
-        console.log("data received");
+        console.log('data received');
         this.setState({
             beforeSend: '',
             waitingForData: false,
@@ -54,7 +54,7 @@ class StatusTable extends React.Component {
 
     componentDidMount() {
         this.interval = 10;
-        //console.log("data request sent");
+        //console.log('data request sent');
 
         this.setState({
             waitingForData: true
@@ -77,17 +77,9 @@ class StatusTable extends React.Component {
 
         return (
             <div>
-                <div className='row'>
-                    <div className='col'>
-                        <h3>Aktualny stan witryn</h3>
-                    </div>
-                    <div className='col text-right'>
-                        <span style={{'lineHeight': '41px', 'fontStyle':'italic'}}><i className='fa fa-info-circle' aria-hidden='true'></i> Dane w tabeli odświeżane są automatycznie co {this.interval} sekund.</span>
-                    </div>
-                </div>
-                
+              <h3>Aktualny stan witryn</h3>
                 <div id='status-table-wrapper' className='table-responsive'>
-                    <table className='table table-striped'>
+                    <table className='table table-striped table-hover'>
                         <thead>
                             <tr>
                                 <th></th>
@@ -132,5 +124,5 @@ class StatusTable extends React.Component {
         );
     }
 }
-  
+
 export default StatusTable;

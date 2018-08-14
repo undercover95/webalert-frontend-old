@@ -10,7 +10,15 @@ import {
   Switch
 } from 'react-router-dom';
 
-import Sidebar from './Sidebar';
+import PrivateRoute from './PrivateRoute';
+
+import {
+  Row,
+  Col,
+  Container
+} from 'reactstrap';
+
+
 import TopBar from './TopBar';
 
 import Cocpit from './cocpit/Cocpit';
@@ -18,26 +26,49 @@ import AddPage from './addPage/AddPage';
 import SiteStats from './siteStats/SiteStats';
 import Reports from './reports/Reports';
 
+import Login from './loginPage/Login';
+import Register from './registerPage/Register';
+import Sidebar from 'components/Sidebar';
+import axios from 'axios';
+import * as Actions from 'actions/Actions';
 require('styles/style.scss');
 
 class Main extends React.Component {
+
+  isLogged = false;
+
+  componentDidMount() {
+
+
+  }
+
   render() {
     return (
       <Router>
-      <div className='container'>
-        <TopBar />
-        <div className='row'>
-          <div className='col mb-4'>
-            <Switch>
-              <Route exact path='/' component={Cocpit} />
-              <Route path='/addPage' component={AddPage} />
-              <Route path='/siteStats/:url' component={SiteStats} />
-              <Route path='/reports' component={Reports} />
-              <Route component={Cocpit} />
-            </Switch>
-          </div>
-        </div>
-      </div>
+        <Container fluid='true'>
+          <Row>
+            <Col>
+              <TopBar/>
+            </Col>
+          </Row>
+          <Sidebar/>
+          <Row className='content'>
+            <Col className='mb-4'>
+              <Switch>
+                <PrivateRoute exact path='/' component={Cocpit} />
+                <PrivateRoute path='/addPage' component={AddPage} />
+                <PrivateRoute path='/siteStats/:id' component={SiteStats} />
+                <PrivateRoute path='/reports' component={Reports} />
+
+                <Route path='/login' component={Login} />
+                <Route path='/register' component={Register} />
+                <Route render={
+                  () => <h3>Page not found!</h3>
+                } />
+              </Switch>
+            </Col>
+        </Row>
+        </Container>
       </Router>
     );
   }

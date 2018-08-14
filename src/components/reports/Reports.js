@@ -37,7 +37,7 @@ export default class Reports extends React.Component {
     getNewReportsCounter() {
         let counter = new Number(0);
         this.state.data.map(report_data => {
-            if(report_data['is_seen'] == 0) counter += 1 
+            if(report_data['is_seen'] == 0) counter += 1
         });
         return counter;
     }
@@ -98,8 +98,8 @@ export default class Reports extends React.Component {
                                     <div>
                                         <h4>Raporty <small>z ostatnich <strong>{this.period}</strong> godzin(y)</small></h4>
                                         <ReportsTable data={this.state.data} />
-                                
-  
+
+
                                     </div>
                                 )
                             ) : this.state.beforeSend

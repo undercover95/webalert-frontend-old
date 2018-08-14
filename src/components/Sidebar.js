@@ -7,7 +7,7 @@ import {
 class Sidebar extends React.Component {
     render() {
         return (
-            <div className='list-group bg-dark'>
+            <div className='sidebar list-group bg-dark'>
                 <Link exact to='/' activeClassName='active' className='list-group-item list-group-item-action'>
                     <i className='fa fa-home' aria-hidden='true'></i> Kokpit
                 </Link>
@@ -21,5 +21,5 @@ class Sidebar extends React.Component {
         );
     }
   }
-  
+
 export default Sidebar;
