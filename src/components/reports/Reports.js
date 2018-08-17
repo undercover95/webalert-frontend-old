@@ -37,7 +37,7 @@ export default class Reports extends React.Component {
     getNewReportsCounter() {
         let counter = new Number(0);
         this.state.data.map(report_data => {
-            if(report_data['is_seen'] == 0) counter += 1
+            if (report_data['is_seen'] == 0) counter += 1
         });
         return counter;
     }
@@ -63,18 +63,18 @@ export default class Reports extends React.Component {
     render() {
         let emptyData = false;
 
-        if(this.state.data.length == 0) emptyData = true;
+        if (this.state.data.length == 0) emptyData = true;
 
         return (
             <div>
-                <Title title={'Raporty ' + (this.getNewReportsCounter()==0 ? '' : ('('+this.getNewReportsCounter()+')'))} icon='fa-bullhorn' />
+                <Title title={'Raporty ' + (this.getNewReportsCounter() == 0 ? '' : ('(' + this.getNewReportsCounter() + ')'))} icon='fa-bullhorn' />
 
                 <div className='card'>
                     <div className='card-header'>
                         <div className='form-inline'>
                             <div className='form-group'>
                                 <label htmlFor='selectPeriod' className='mr-2'>Pokaż raporty z:</label>
-                                <select className='form-control form-control-sm styled-select' id='selectPeriod' onChange={this.handleChange.bind(this)}>
+                                <select className='form-control form-control-sm' id='selectPeriod' onChange={this.handleChange.bind(this)}>
                                     <option value='1'>ostatniej godziny</option>
                                     <option value='6'>ostatnich 6 godzin</option>
                                     <option value='12'>ostatnich 12 godzin</option>
@@ -87,7 +87,7 @@ export default class Reports extends React.Component {
                         </div>
                     </div>
                     <div className='card-body'>
-                    {
+                        {
                             this.state.beforeSend == null ? (
                                 emptyData ? (
                                     <div className='alert alert-info'>
@@ -95,17 +95,17 @@ export default class Reports extends React.Component {
                                         Brak raportów do wyświetlenia z wybranego okresu czasu.
                                     </div>
                                 ) : (
-                                    <div>
-                                        <h4>Raporty <small>z ostatnich <strong>{this.period}</strong> godzin(y)</small></h4>
-                                        <ReportsTable data={this.state.data} />
+                                        <div>
+                                            <h4>Raporty <small>z ostatnich <strong>{this.period}</strong> godzin(y)</small></h4>
+                                            <ReportsTable data={this.state.data} />
 
 
-                                    </div>
-                                )
+                                        </div>
+                                    )
                             ) : this.state.beforeSend
                         }
-                        </div>
                     </div>
+                </div>
             </div>
         )
     }

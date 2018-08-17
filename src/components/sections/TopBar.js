@@ -10,7 +10,8 @@ import {
 
 import {
   NavLink as Link,
-  Redirect
+  Redirect,
+  browserHistory
 } from 'react-router-dom';
 
 import jwt_decode from 'jwt-decode';
@@ -36,7 +37,7 @@ class TopBar extends React.Component {
   render() {
 
     return (
-      <Navbar color='dark' dark expand='md'>
+      <Navbar color='dark' dark expand='md' fixed="top">
         <NavbarToggler onClick={this.toggle} />
         <Collapse isOpen={this.state.isOpen} navbar>
           {
@@ -51,7 +52,6 @@ class TopBar extends React.Component {
                 <NavItem>
                   <span color="link" className='nav-link' style={{ cursor: 'pointer' }} onClick={() => {
                     AuthService.logoutUser();
-                    return <Redirect to='/login' />
                   }
                   }>
                     <i className='fa fa-sign-in' aria-hidden='true'></i> Wyloguj się

@@ -15,10 +15,16 @@ h5 {
 }
 
 nav {
+  margin-left: 200px;
+  z-index: 1100 !important;
   box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.25);
   .navbar-brand {
     color: white !important;
   }
+}
+
+.bg-dark {
+  background-color: #444 !important;
 }
 
 .nav-tabs {
@@ -126,7 +132,7 @@ nav {
     line-height: 56px;
     color: white;
     font-size: 30px;
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, .5);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, .15);
     background: rgb(5, 171, 224);
     transition: all 0.2s ease;
     &:hover {
@@ -134,7 +140,6 @@ nav {
     }
   }
   .list-group {
-    box-shadow: 0px -1px 5px rgba(0, 0, 0, 0.25);
     .list-group-item {
       background-color: transparent !important;
       color: #ddd;
@@ -143,7 +148,7 @@ nav {
       &.active {
         z-index: 2;
         color: #fff !important;
-        background-color: #555 !important;
+        background-color: #666 !important;
       }
       &:hover {
         color: #007bff;
@@ -152,9 +157,13 @@ nav {
   }
 }
 
-.content {
+.mainContainer {
   margin-left: 200px;
   width: auto;
+}
+
+.content {
+  margin-top: 56px;
 }
 
 #bottom-table-toolbar {
@@ -321,7 +330,6 @@ footer {
 
 #status-table-wrapper {
   position: relative;
-  max-height: 450px;
   overflow-y: auto;
   table {
     border: 1px solid #ddd;

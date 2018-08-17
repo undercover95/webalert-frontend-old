@@ -43,7 +43,7 @@ export default class StatusTableRowItem_checkBox extends React.Component {
         Actions.removeCheckedSite(this.site_id);
     }
 
-    /*componentWillMount() {
+    componentWillMount() {
         SiteDataStore.on('checkAllSites', this.makeCheck);
         SiteDataStore.on('uncheckAllSites', this.makeUncheck);
         this.site_id = this.props.site_id;
@@ -52,7 +52,7 @@ export default class StatusTableRowItem_checkBox extends React.Component {
     componentWillUnmount() {
         SiteDataStore.removeListener('checkAllSites', this.makeCheck);
         SiteDataStore.removeListener('uncheckAllSites', this.makeUncheck);
-    }*/
+    }
 
     render() {
         return (

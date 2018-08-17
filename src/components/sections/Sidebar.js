@@ -16,7 +16,7 @@ class Sidebar extends React.Component {
                     <Link to='/addPage' activeClassName='active' className='list-group-item list-group-item-action'>
                         <i className='fa fa-plus-circle' aria-hidden='true'></i> Dodaj witrynę
                 </Link>
-                    <Link to='#' activeClassName='active' className='list-group-item list-group-item-action'>
+                    <Link to='/reports' activeClassName='active' className='list-group-item list-group-item-action'>
                         <i className='fa fa-bullhorn' aria-hidden='true'></i> Raporty <span className='badge badge-danger'>5</span>
                     </Link>
                 </div>

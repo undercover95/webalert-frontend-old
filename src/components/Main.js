@@ -39,7 +39,7 @@ class Main extends React.Component {
       <Router>
         <div>
           <Sidebar />
-          <Container className={'content'} fluid={true}>
+          <Container className={'mainContainer'} fluid={true}>
 
             <Row>
               <Col className={'px-0'}>
@@ -47,7 +47,7 @@ class Main extends React.Component {
               </Col>
             </Row>
 
-            <Row>
+            <Row className={'content'}>
               <Col className={'px-4 pt-3 pb-4'}>
                 <Switch>
                   <PrivateRoute exact path='/' component={Cocpit} />

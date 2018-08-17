@@ -26,7 +26,7 @@ export default class SiteStats extends React.Component {
     }
 
     componentWillUnmount() {
-        StatsStore.removeListener('statsDataChange' ,this.getData);
+        StatsStore.removeListener('statsDataChange', this.getData);
     }
 
     componentDidMount() {
@@ -72,18 +72,18 @@ export default class SiteStats extends React.Component {
 
         let emptyData = false;
 
-        if(this.state.data.length == 0) emptyData = true;
+        if (this.state.data.length == 0) emptyData = true;
 
         return (
             <div>
-                <SiteStatsTitle title='Statystyki witryny' sitename={"test"} icon='fa-pie-chart'/>
+                <SiteStatsTitle title='Statystyki witryny' sitename={"id: " + site_id} icon='fa-pie-chart' />
 
                 <div className='card'>
                     <div className='card-header'>
                         <div className='form-inline'>
                             <div className='form-group'>
                                 <label htmlFor='selectPeriod' className='mr-2'>Pokaż dane z:</label>
-                                <select className='form-control form-control-sm styled-select' id='selectPeriod' onChange={this.handleChange.bind(this)}>
+                                <select className='form-control form-control-sm' id='selectPeriod' onChange={this.handleChange.bind(this)}>
                                     <option value='1'>ostatniej godziny</option>
                                     <option value='6'>ostatnich 6 godzin</option>
                                     <option value='12'>ostatnich 12 godzin</option>
@@ -104,14 +104,14 @@ export default class SiteStats extends React.Component {
                                         Brak danych do wyświetlenia z wybranego okresu czasu.
                                     </div>
                                 ) : (
-                                    <div>
-                                        <h4><i className='fa fa-check-circle' aria-hidden='true'></i> Podsumowanie <small>z ostatnich <strong>{this.period}</strong> godzin(y)</small></h4>
-                                        <SiteStatsOverview data={this.state.data} />
+                                        <div>
+                                            <h4><i className='fa fa-check-circle' aria-hidden='true'></i> Podsumowanie <small>z ostatnich <strong>{this.period}</strong> godzin(y)</small></h4>
+                                            <SiteStatsOverview data={this.state.data} />
 
-                                        <h4><i className='fa fa-clock-o' aria-hidden='true'></i> Czas odpowiedzi serwera <small>z ostatnich <strong>{this.period}</strong> godzin(y)</small></h4>
-                                        <TimeResponseChart data={this.getDataForChart()} />
-                                    </div>
-                                )
+                                            <h4><i className='fa fa-clock-o' aria-hidden='true'></i> Czas odpowiedzi serwera <small>z ostatnich <strong>{this.period}</strong> godzin(y)</small></h4>
+                                            <TimeResponseChart data={this.getDataForChart()} />
+                                        </div>
+                                    )
                             ) : this.state.beforeSend
                         }
 

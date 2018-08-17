@@ -33,13 +33,13 @@ class StatusTableRow extends React.Component {
         });
     }
 
-    /*componentWillMount() {
+    componentWillMount() {
         SiteDataStore.on('change', this.hideRefreshingInfo);
     }
 
     componentWillUnmount() {
         SiteDataStore.removeListener('change', this.hideRefreshingInfo);
-    }*/
+    }
 
     updateSingleSiteStatus() {
 
