@@ -8,9 +8,9 @@ import {
     NavLink
 } from 'reactstrap';
 
-import Title from '../Title';
-import AddSinglePageForm from './AddSinglePageForm';
-import AddMultiplePagesForm from './AddMultiplePagesForm';
+import Title from '../sections/Title';
+import AddSinglePageForm from './forms/AddSinglePageForm';
+import AddMultiplePagesForm from './forms/AddMultiplePagesForm';
 
 export default class AddPage extends React.Component {
 

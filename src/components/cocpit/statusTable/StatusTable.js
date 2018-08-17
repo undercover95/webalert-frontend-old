@@ -5,10 +5,16 @@ import * as Actions from 'actions/Actions';
 
 import {
     NavLink as Link
-  } from 'react-router-dom';
+} from 'react-router-dom';
 
-import StatusTableRow from './StatusTableRow';
-import StatusTableBottomToolbar from './StatusTableBottomToolbar';
+import {
+    Input,
+    InputGroup,
+    InputGroupAddon
+} from 'reactstrap';
+
+import StatusTableRow from './elements/StatusTableRow';
+import StatusTableBottomToolbar from './elements/StatusTableBottomToolbar';
 
 class StatusTable extends React.Component {
 
@@ -35,7 +41,6 @@ class StatusTable extends React.Component {
     }
 
     getData() {
-        console.log('data received');
         this.setState({
             beforeSend: '',
             waitingForData: false,
@@ -73,12 +78,17 @@ class StatusTable extends React.Component {
         let emptyData = false;
         let waitingForData = this.state.waitingForData;
 
-        if(this.state.data.length == 0) emptyData = true;
+        if (this.state.data.length == 0) emptyData = true;
 
         return (
             <div>
-              <h3>Aktualny stan witryn</h3>
-                <div id='status-table-wrapper' className='table-responsive'>
+                <h3>Aktualny stan witryn</h3>
+                <div className={'form-control'}>
+                    <InputGroup>
+                        <Input placeholder="Wpisz adres szukanej witryny..." />
+                    </InputGroup>
+                </div>
+                <div id='status-table-wrapper' className={'table-responsive'}>
                     <table className='table table-striped table-hover'>
                         <thead>
                             <tr>
@@ -104,19 +114,19 @@ class StatusTable extends React.Component {
                         !waitingForData ? (
                             emptyData ? (
                                 <div className='alert alert-info'>
-                                <h5 className='alert-heading'><i className='fa fa-info-circle'></i> Brak danych do wyświetlenia.</h5>
-                                Aktualnie nie monitorujesz żadnych stron. Spróbuj <Link to='/addPage' className='alert-link'>dodać witryny</Link> do monitora.</div>
+                                    <h5 className='alert-heading'><i className='fa fa-info-circle'></i> Brak danych do wyświetlenia.</h5>
+                                    Aktualnie nie monitorujesz żadnych stron. Spróbuj <Link to='/addPage' className='alert-link'>dodać witryny</Link> do monitora.</div>
                             ) : ''
                         ) : (
-                            <span><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Pobieram aktualne dane...</span>
-                        )
+                                <span><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Pobieram aktualne dane...</span>
+                            )
 
                     }
                 </div>
                 {
                     !waitingForData ? (
                         !emptyData ? (
-                            <StatusTableBottomToolbar updateData={this.updateData.bind(this)} beforeSend={this.state.beforeSend}/>
+                            <StatusTableBottomToolbar updateData={this.updateData.bind(this)} beforeSend={this.state.beforeSend} />
                         ) : ''
                     ) : ''
                 }

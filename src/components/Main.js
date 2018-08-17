@@ -19,7 +19,7 @@ import {
 } from 'reactstrap';
 
 
-import TopBar from './TopBar';
+import TopBar from './sections/TopBar';
 
 import Cocpit from './cocpit/Cocpit';
 import AddPage from './addPage/AddPage';
@@ -28,46 +28,41 @@ import Reports from './reports/Reports';
 
 import Login from './loginPage/Login';
 import Register from './registerPage/Register';
-import Sidebar from 'components/Sidebar';
-import axios from 'axios';
-import * as Actions from 'actions/Actions';
+import Sidebar from 'components/sections/Sidebar';
+
 require('styles/style.scss');
 
 class Main extends React.Component {
 
-
   render() {
-
     return (
       <Router>
-        <Container fluid={true}>
+        <div>
+          <Sidebar />
+          <Container className={'content'} fluid={true}>
 
+            <Row>
+              <Col className={'px-0'}>
+                <TopBar />
+              </Col>
+            </Row>
 
-          <Row>
-            <Col>
-              <TopBar/>
-            </Col>
-          </Row>
+            <Row>
+              <Col className={'px-4 pt-3 pb-4'}>
+                <Switch>
+                  <PrivateRoute exact path='/' component={Cocpit} />
+                  <PrivateRoute path='/addPage' component={AddPage} />
+                  <PrivateRoute path='/siteStats/:id' component={SiteStats} />
+                  <PrivateRoute path='/reports' component={Reports} />
 
-          <Row>
-            <Col md={2}>
-              <Sidebar/>
-            </Col>
-            <Col md={10}>
-              <Switch>
-                <PrivateRoute exact path='/' component={Cocpit} />
-                <PrivateRoute path='/addPage' component={AddPage} />
-                <PrivateRoute path='/siteStats/:id' component={SiteStats} />
-                <PrivateRoute path='/reports' component={Reports} />
+                  <Route path='/login' component={Login} />
+                  <Route path='/register' component={Register} />
+                </Switch>
+              </Col>
+            </Row>
 
-                <Route path='/login' component={Login} />
-                <Route path='/register' component={Register} />
-              </Switch>
-            </Col>
-          </Row>
-
-
-        </Container>
+          </Container>
+        </div>
       </Router>
     );
   }

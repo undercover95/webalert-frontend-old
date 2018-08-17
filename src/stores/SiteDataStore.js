@@ -19,8 +19,8 @@ class SiteDataStore extends EventEmitter {
     }
 
     saveCheckedSite(site_id) {
-        
-        if(!this.checkedSites.includes(site_id)) {
+
+        if (!this.checkedSites.includes(site_id)) {
             this.checkedSites.push(site_id);
             //console.log(this.checkedSites);
             this.emit('checkedSiteChange');
@@ -28,9 +28,9 @@ class SiteDataStore extends EventEmitter {
     }
 
     removeCheckedSite(site_id) {
-        
-        if(this.checkedSites.includes(site_id)) {
-            this.checkedSites.splice(this.checkedSites.indexOf(site_id),1);
+
+        if (this.checkedSites.includes(site_id)) {
+            this.checkedSites.splice(this.checkedSites.indexOf(site_id), 1);
             //console.log(this.checkedSites);
             this.emit('checkedSiteChange');
         }
@@ -44,15 +44,15 @@ class SiteDataStore extends EventEmitter {
     }
 
     checkIfSiteWorking(http_code) {
-        if(http_code == null) return;
-        else if((http_code >= 400 && http_code < 600) || http_code < 0 || http_code == 310) return false;
+        if (http_code == null) return;
+        else if ((http_code >= 400 && http_code < 600) || http_code < 0 || http_code == 310) return false;
         else return true;
     }
 
     getCounters() {
         return {
             all: this.siteData.length,
-            notWorking:  this.siteData.filter(siteDataElem => !this.checkIfSiteWorking(siteDataElem.status_code)).length,
+            notWorking: this.siteData.filter(siteDataElem => !this.checkIfSiteWorking(siteDataElem.status_code)).length,
             working: this.siteData.filter(siteDataElem => this.checkIfSiteWorking(siteDataElem.status_code)).length
         }
     }
@@ -67,9 +67,9 @@ class SiteDataStore extends EventEmitter {
         this.emit('uncheckAllSites');
     }
 
-    handleActions(action){        
-        switch(action.type) {
-            case 'GET_ALL_SITES_STATUS': 
+    handleActions(action) {
+        switch (action.type) {
+            case 'GET_ALL_SITES_STATUS':
                 this.updateAllSitesData(action.data)
                 break;
             case 'COLLECT_CHECKED_SITE':

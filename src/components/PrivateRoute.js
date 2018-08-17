@@ -1,23 +1,26 @@
 import React from 'react'
-import axios from 'axios'
-import { Redirect, Route } from 'react-router-dom'
+
+import {
+  Redirect,
+  Route
+} from 'react-router-dom'
+
+import * as AuthService from './auth/AuthService';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
-
-  console.log("local",localStorage.getItem('logged'))
-
   return (
-    <Route
-      {...rest}
-      render={ props =>
-        localStorage.getItem('logged') ? (
-          <Component {...props} />
-        ) : (
-          <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
+    <Route {...rest} render={props => {
+      return AuthService.getToken() ? (
+        <Component {...props} />
+      ) : (
+          <Redirect to={{
+            pathname: '/login',
+            state: { from: props.location }
+          }}
+          />
         )
-      }
-    />
-  )
+    }} />
+  );
 }
 
 export default PrivateRoute;

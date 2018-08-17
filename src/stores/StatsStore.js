@@ -15,7 +15,7 @@ class StatsStore extends EventEmitter {
     }
 
     getResponseTimeData(res) {
-        console.log('CHART DATA: ',res.data);
+        console.log('CHART DATA: ', res.data);
         this.data = res.data.result;
 
         // remove initial null value
@@ -24,10 +24,10 @@ class StatsStore extends EventEmitter {
         this.emit('statsDataChange');
     }
 
-    handleActions(action){
+    handleActions(action) {
         const type = action.type;
 
-        switch(type) {
+        switch (type) {
             case 'GET_RESPONSE_TIME_DATA':
                 this.getResponseTimeData(action.data)
                 break;

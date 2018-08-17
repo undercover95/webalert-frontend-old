@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Title from 'components/Title';
+import Title from 'components/sections/Title';
 import ReportsTable from './ReportsTable';
 
 import ReportsDataStore from 'stores/ReportsDataStore';
