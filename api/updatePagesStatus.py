@@ -65,7 +65,7 @@ class Mailer:
     def send_email(self, msg_subject, msg_content):
 
         sg = sendgrid.SendGridAPIClient(
-            apikey='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'
+            apikey='apikey'
         )
 
         from_email = Email("Monitor stron internetowych <mbularz95@interia.pl>")
