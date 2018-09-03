@@ -1,6 +1,7 @@
 import React from 'react';
 
 import StatsStore from 'stores/StatsStore';
+import SiteDataStore from 'stores/SiteDataStore';
 import * as Actions from 'actions/Actions';
 
 import SiteStatsTitle from './SiteStatsTitle';
@@ -30,7 +31,8 @@ export default class SiteStats extends React.Component {
     }
 
     componentDidMount() {
-        document.title = 'Statystyki witryny ' + this.props.match.params.id + ' | Monitor stron internetowych';
+        this.siteUrl = SiteDataStore.getSiteUrlById(this.props.match.params.id);
+        document.title = 'Statystyki witryny ' + this.siteUrl + ' | Monitor stron internetowych';
         Actions.getResponseTimeData(this.props.match.params.id, this.period);
     }
 
@@ -76,7 +78,7 @@ export default class SiteStats extends React.Component {
 
         return (
             <div>
-                <SiteStatsTitle title='Statystyki witryny' sitename={"id: " + site_id} icon='fa-pie-chart' />
+                <SiteStatsTitle title='Statystyki witryny' sitename={this.siteUrl} icon='fa-pie-chart' />
 
                 <div className='card'>
                     <div className='card-header'>

@@ -5,8 +5,6 @@ import SiteDataStore from 'stores/SiteDataStore';
 
 export default class StatusTableRowItem_checkBox extends React.Component {
 
-    site_id = -1;
-
     constructor() {
         super();
         this.state = {
@@ -43,15 +41,18 @@ export default class StatusTableRowItem_checkBox extends React.Component {
         Actions.removeCheckedSite(this.site_id);
     }
 
-    componentWillMount() {
+    /*componentWillMount() {
         SiteDataStore.on('checkAllSites', this.makeCheck);
         SiteDataStore.on('uncheckAllSites', this.makeUncheck);
-        this.site_id = this.props.site_id;
     }
 
     componentWillUnmount() {
         SiteDataStore.removeListener('checkAllSites', this.makeCheck);
         SiteDataStore.removeListener('uncheckAllSites', this.makeUncheck);
+    }*/
+
+    componentDidMount() {
+        this.site_id = this.props.site_id;
     }
 
     render() {

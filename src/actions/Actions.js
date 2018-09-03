@@ -15,7 +15,6 @@ const getHeaders = () => {
 export function getLatestAllSitesStatus() {
   axios.get(apihost + '/getLastAllPagesStatus', getHeaders())
     .then((site_data) => {
-      console.log('getLatestAllSitesStatus AXIOS completed');
       Dispather.dispatch({ type: 'GET_ALL_SITES_STATUS', data: site_data.data })
     })
     .catch(
@@ -27,13 +26,28 @@ export function getLatestAllSitesStatus() {
       });
 }
 
+export function getLastStatusOfWebsite(site_id) {
+  let data = qs.stringify({ id: site_id });
+
+  axios.post(apihost + '/getLastPageStatus', data, getHeaders())
+    .then((site_data) => {
+      Dispather.dispatch({ type: 'GET_SINGLE_SITE_STATUS', data: site_data.data })
+    })
+    .catch(
+      (err) => {
+        if (err.response) {
+          if (err.response.status == 403) alert('Nie można wykonać akcji getLastStatusOfWebsite! Nie jesteś zalogowany!')
+        }
+        else console.log('AXIOS getLastStatusOfWebsite FAILED', err)
+      });
+}
+
 export function updateSingleSiteStatus(site_id) {
   let data = qs.stringify({ id: site_id });
 
   axios.post(apihost + '/refreshSinglePageStatus', data, getHeaders())
-    .then((resp) => {
-      console.log('single page update response', resp);
-      getLatestAllSitesStatus();
+    .then(() => {
+      getLastStatusOfWebsite(site_id);
     })
     .catch(
       (err) => {
@@ -46,7 +60,7 @@ export function updateSingleSiteStatus(site_id) {
 
 export function updateAllSitesStatus() {
   axios.get(apihost + '/refreshAllPagesStatus', getHeaders())
-    .then(() => {
+    .then((res) => {
       getLatestAllSitesStatus();
     })
     .catch(
@@ -60,7 +74,6 @@ export function updateAllSitesStatus() {
 
 export function removeSite(site_id) {
   let data = qs.stringify({ id: site_id });
-  console.log('Removing site id:', site_id)
   axios.post(apihost + '/removePage', data, getHeaders())
     .then(() => {
       getLatestAllSitesStatus();
@@ -76,7 +89,6 @@ export function removeSite(site_id) {
 
 export function addSingleSite(url) {
   let data = qs.stringify({ url: url });
-  console.log('adding site:', url)
 
   if (url == '' || url === undefined || url === null) return;
 
@@ -107,7 +119,6 @@ export function addMultipleSites(inputStr) {
   });
 
   let data = qs.stringify({ sites: pages });
-  console.log('adding sites:', pages)
 
   axios.post(apihost + '/addMultiplePages', data, getHeaders())
     .then((errors) => {
@@ -163,13 +174,13 @@ export function uncheckAllSites() {
   Dispather.dispatch({ type: 'UNCHECK_ALL_SITES' });
 }
 
-export function getReports(period = 24) {
+/*export function getReports(period = 24) {
   let data = qs.stringify({ period: period });
 
   if (period == null || period == undefined || period == '') return;
 
   axios.post(apihost + '/getReports', data, getHeaders()).then((res) => {
-    console.log('getReports', res.data)
+
     Dispather.dispatch({
       type: 'GET_REPORTS_DATA',
       data: res

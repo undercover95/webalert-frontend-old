@@ -26,8 +26,9 @@ import AddPage from './addPage/AddPage';
 import SiteStats from './siteStats/SiteStats';
 import Reports from './reports/Reports';
 
-import Login from './loginPage/Login';
-import Register from './registerPage/Register';
+import Login from './auth/Login';
+import Logout from './auth/Logout';
+import Register from './auth/Register';
 import Sidebar from 'components/sections/Sidebar';
 
 require('styles/style.scss');
@@ -38,22 +39,23 @@ class Main extends React.Component {
     return (
       <Router>
         <div>
-          <Sidebar />
-          <Container className={'mainContainer'} fluid={true}>
-
+          <Container fluid={true}>
             <Row>
-              <Col className={'px-0'}>
+              <Col>
                 <TopBar />
               </Col>
             </Row>
+          </Container>
 
-            <Row className={'content'}>
-              <Col className={'px-4 pt-3 pb-4'}>
+          <Container className={'mainContainer mb-5'}>
+            <Row>
+              <Col>
                 <Switch>
                   <PrivateRoute exact path='/' component={Cocpit} />
                   <PrivateRoute path='/addPage' component={AddPage} />
                   <PrivateRoute path='/siteStats/:id' component={SiteStats} />
                   <PrivateRoute path='/reports' component={Reports} />
+                  <PrivateRoute path='/logout' component={Logout} />
 
                   <Route path='/login' component={Login} />
                   <Route path='/register' component={Register} />

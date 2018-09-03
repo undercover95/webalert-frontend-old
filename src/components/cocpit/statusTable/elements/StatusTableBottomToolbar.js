@@ -5,6 +5,8 @@ import * as Actions from 'actions/Actions';
 
 import { Row, Col, Button, Form, FormGroup, Label, Input } from 'reactstrap';
 
+import RefreshAllWebsitesButton from './RefreshAllWebsitesButton';
+
 export default class StatusTableBottomToolbar extends React.Component {
 
     constructor() {
@@ -71,10 +73,6 @@ export default class StatusTableBottomToolbar extends React.Component {
     }
 
     render() {
-
-        const beforeSend = this.props.beforeSend;
-        const updateData = this.props.updateData;
-
         return (
             <Row id='bottom-table-toolbar'>
                 <Col md={8}>
@@ -96,9 +94,7 @@ export default class StatusTableBottomToolbar extends React.Component {
                     </div>
                 </Col>
                 <Col md={4} className='text-right'>
-                    <Button color='info' size='sm' onClick={() => updateData()} disabled={beforeSend == '' ? false : true}>
-                        {beforeSend == '' ? <span><i className='fa fa-refresh' aria-hidden='true'></i> Odśwież stan wszystkich witryn</span> : beforeSend}
-                    </Button>
+                    <RefreshAllWebsitesButton />
                 </Col>
             </Row>
         );

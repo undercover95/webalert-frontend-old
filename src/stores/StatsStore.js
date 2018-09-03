@@ -6,7 +6,7 @@ class StatsStore extends EventEmitter {
 
     constructor() {
         super();
-        this.data = [];
+        this.data = localStorage.getItem('statsData') ? JSON.parse(localStorage.getItem('statsData')) : [];
 
     }
 
@@ -17,9 +17,9 @@ class StatsStore extends EventEmitter {
     getResponseTimeData(res) {
         console.log('CHART DATA: ', res.data);
         this.data = res.data.result;
-
         // remove initial null value
         this.data.shift();
+        localStorage.setItem('statsData', JSON.stringify(this.data))
 
         this.emit('statsDataChange');
     }

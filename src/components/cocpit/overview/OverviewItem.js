@@ -8,11 +8,11 @@ const OverviewItem = (props) => {
     const counter = props.counter;
 
     return (
-        <div id={type} className={'card overview-content mb-3' + (counter == 0 ? ' not-working-counter-inactive' : '')}>
+        <div id={type} className={'card overview-content mb-3'}>
             <div className='card-body'>
                 <i className={'fa fa-2x ' + icon} aria-hidden='true'></i>
-                <span className='badge overview-counter'>{counter}</span><br />
-                <small>{description}</small>
+                <div className='overview-counter'>{counter}</div>
+                <p>{description}</p>
             </div>
         </div>
     );

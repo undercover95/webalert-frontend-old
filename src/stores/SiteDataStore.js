@@ -6,12 +6,30 @@ class SiteDataStore extends EventEmitter {
 
     constructor() {
         super();
-        this.siteData = [];
-        this.checkedSites = [];
+        this.siteData = localStorage.getItem('siteData') ? JSON.parse(localStorage.getItem('siteData')) : {};
+        this.checkedSites = localStorage.getItem('checkedSites') ? localStorage.getItem('checkedSites') : [];
     }
 
     getAllSitesData() {
-        return this.siteData;
+
+        let compare = (a, b) => {
+            const codeA = a.status_code
+            const codeB = b.status_code
+
+            let comparison = 0;
+            if (codeA > codeB) {
+                comparison = 1;
+            } else if (codeA < codeB) {
+                comparison = -1;
+            }
+            return comparison;
+        }
+
+        return Object.values(this.siteData).sort(compare);
+    }
+
+    getSiteUrlById(site_id) {
+        return this.siteData[site_id].url;
     }
 
     getCheckedSites() {
@@ -22,7 +40,7 @@ class SiteDataStore extends EventEmitter {
 
         if (!this.checkedSites.includes(site_id)) {
             this.checkedSites.push(site_id);
-            //console.log(this.checkedSites);
+            localStorage.setItem('checkedSites', this.checkedSites)
             this.emit('checkedSiteChange');
         }
     }
@@ -31,14 +49,30 @@ class SiteDataStore extends EventEmitter {
 
         if (this.checkedSites.includes(site_id)) {
             this.checkedSites.splice(this.checkedSites.indexOf(site_id), 1);
-            //console.log(this.checkedSites);
+            localStorage.setItem('checkedSites', this.checkedSites)
             this.emit('checkedSiteChange');
         }
     }
 
     updateAllSitesData(data) {
-        this.siteData = data.result;
+        const tempSiteData = data.result;
 
+        this.siteData = {}
+        tempSiteData.map(dataRow => {
+            this.siteData[dataRow.site_id] = dataRow
+        });
+
+        localStorage.setItem('siteData', JSON.stringify(this.siteData))
+        this.emit('change');
+        this.emit('counterChange');
+    }
+
+    updateSingleSiteData(data) {
+        const tempSingleSiteData = data.result[0];
+        this.siteData[tempSingleSiteData.site_id] = tempSingleSiteData
+        localStorage.setItem('siteData', JSON.stringify(this.siteData))
+
+        this.emit('singleSiteStatusUpdated_id=' + tempSingleSiteData.site_id);
         this.emit('change');
         this.emit('counterChange');
     }
@@ -51,9 +85,9 @@ class SiteDataStore extends EventEmitter {
 
     getCounters() {
         return {
-            all: this.siteData.length,
-            notWorking: this.siteData.filter(siteDataElem => !this.checkIfSiteWorking(siteDataElem.status_code)).length,
-            working: this.siteData.filter(siteDataElem => this.checkIfSiteWorking(siteDataElem.status_code)).length
+            all: Object.keys(this.siteData).length,
+            notWorking: Object.values(this.siteData).filter(siteDataElem => !this.checkIfSiteWorking(siteDataElem.status_code)).length,
+            working: Object.values(this.siteData).filter(siteDataElem => this.checkIfSiteWorking(siteDataElem.status_code)).length
         }
     }
 
@@ -72,15 +106,23 @@ class SiteDataStore extends EventEmitter {
             case 'GET_ALL_SITES_STATUS':
                 this.updateAllSitesData(action.data)
                 break;
+
+            case 'GET_SINGLE_SITE_STATUS':
+                this.updateSingleSiteData(action.data)
+                break;
+
             case 'COLLECT_CHECKED_SITE':
                 this.saveCheckedSite(action.data)
                 break;
+
             case 'REMOVE_CHECKED_SITE':
                 this.removeCheckedSite(action.data)
                 break;
+
             case 'CHECK_ALL_SITES':
                 this.checkAllSites();
                 break;
+
             case 'UNCHECK_ALL_SITES':
                 this.uncheckAllSites();
                 break;

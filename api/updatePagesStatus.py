@@ -1,11 +1,14 @@
 #!/usr/bin/python
 
-import sys, getopt
+import sys
+import getopt
 
 import pycurl
 import cStringIO
 
-import time, sched, threading
+import time
+import sched
+import threading
 import datetime
 
 import mysql.connector
@@ -65,10 +68,11 @@ class Mailer:
     def send_email(self, msg_subject, msg_content):
 
         sg = sendgrid.SendGridAPIClient(
-            apikey='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'
+            apikey='apikey'
         )
 
-        from_email = Email("Monitor stron internetowych <mbularz95@interia.pl>")
+        from_email = Email(
+            "Monitor stron internetowych <mbularz95@interia.pl>")
         to_email = Email(self.msg_to)
 
         subject = msg_subject
@@ -82,9 +86,8 @@ class Mailer:
             print "Mail sent correctly."
         except urllib.HTTPError as e:
             print "Mail sending failed."
-            #print(e.read())
+            # print(e.read())
             exit()
-
 
     def prepare_failure_msg_and_send(self, site, response_code,
                                      code_description, timestamp):
@@ -94,7 +97,7 @@ class Mailer:
         if str(site_url[0:7]) != "http://":
             site_url = "http://" + site_url
 
-        #print "Blad %s %s" % (code_description['code_description_short'], code_description['code_description_long'])
+        # print "Blad %s %s" % (code_description['code_description_short'], code_description['code_description_long'])
 
         alert_text = "Strona %s przestala dzialac!" % site
         msg_content = """
@@ -132,6 +135,7 @@ class Mailer:
         """ % (site, site, last_response_time, timestamp)
 
         self.send_email(alert_text, msg_content)
+
 
 def check_if_working(code):
     code = int(code)
@@ -254,14 +258,10 @@ def update_pages_status(site_id=None):
         else:
             last_status_code = row['status_code']
 
-
-
-
         if check_if_working(code) != 0:
             # website not working
             print "website not working"
 
-            
             if check_if_working(last_status_code) == 0:
                 # not working now, but it worked last time
                 print "not working now, but it worked last time"
@@ -276,9 +276,6 @@ def update_pages_status(site_id=None):
                     print "Cannot update page status of '" + row['url'] + "'."
                     print(err)
                     pass
-
-
-
 
                 get_code_desc_sql = "SELECT * FROM `status_codes` WHERE `status_code`=%s" % code
 
@@ -297,18 +294,9 @@ def update_pages_status(site_id=None):
                     'code_description_long': get_code_desc_row[0]['long_desc']
                 }
 
-                print "send email about not-working for site "+row['url_adress']
+                print "send email about not-working for site "+row['url']
 
-                mailer.prepare_failure_msg_and_send(row['url'], code, code_description, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-
-
-                generate_report_sql = "INSERT INTO `reports`(`url`, `breakdown_from`, `status_code`) VALUES('%s', '%s', '%s')" % (row['url'], datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), code)
-
-                try:
-                    cursor.execute(generate_report_sql)
-                except mysql.connector.errors.Error as err:
-                    print(err)
-                    sys.exit()
+                #mailer.prepare_failure_msg_and_send(row['url'], code, code_description, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
             elif check_if_working(last_status_code) != 0:
                 # not working now and didn't worked last time
@@ -332,8 +320,7 @@ def update_pages_status(site_id=None):
 
         else:
             update_pages_sql = "INSERT INTO `pages_status` (`site_id`, `status_code`, `last_checked`, `last_working_time`,  `last_response_time`) VALUES (%s, %s, now(), now(), %s)" % (
-            row['site_id'], code, time)
-
+                row['site_id'], code, time)
 
             try:
                 cursor.execute(update_pages_sql)
@@ -343,26 +330,12 @@ def update_pages_status(site_id=None):
                 print(err)
                 pass
 
-
-
             if check_if_working(last_status_code) != 0:
                 # working now, but it didn't worked last time
                 print "working now, but it didn't worked last time"
                 print "send email about working for site "+row['url']
-                
-                mailer.prepare_success_msg_and_send(row['url'], row['last_working_time'], datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-                
-                
-                generate_report_sql = "INSERT INTO `reports`(`url`, `breakdown_from`, `breakdown_to`, `status_code`) VALUES('%s', '%s', '%s', '%s')" % (row['url'], row['last_working_time'], datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), code)
 
-                try:
-                    cursor.execute(generate_report_sql)
-                except mysql.connector.errors.Error as err:
-                    print(err)
-                    sys.exit()
-
-
-
+                #mailer.prepare_success_msg_and_send(row['url'], row['last_working_time'], datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
 
     db.conn.commit()
     print "Updating all pages completed"
@@ -373,6 +346,7 @@ def update_pages_status(site_id=None):
 def repeat(sc):
     update_pages_status()
     sc.enter(float(interval), 1, repeat, (sc, ))
+
 
 if __name__ == '__main__':
 
@@ -390,9 +364,9 @@ if __name__ == '__main__':
 
     for opt, val in opts:
         if opt == '-p':
-            #if val.is_number(): # modul do sprawdzenia czy cos jest liczba
+            # if val.is_number(): # modul do sprawdzenia czy cos jest liczba
             interval = val
-            #else:
+            # else:
             # print "'%s' nie jest poprawnym interwalem dla opcji -p!\nInterwal musi byc liczba sekund." % val
             # sys.exit()
 
@@ -401,7 +375,8 @@ if __name__ == '__main__':
         conf = json.load(f)
 
     conf = conf['db_props']
-    db = Database(conf['username'], conf['password'], conf['hostname'], conf['db_name'])
+    db = Database(conf['username'], conf['password'],
+                  conf['hostname'], conf['db_name'])
     mailer = Mailer('mbularz95@interia.pl')
 
     if not interval is None:
@@ -419,4 +394,3 @@ if __name__ == '__main__':
             for site_id in args:
                 print "Running checking status of website: '%s'" % site_id
                 update_pages_status(site_id)
-

@@ -8,7 +8,6 @@ class Sidebar extends React.Component {
     render() {
         return (
             <div className='sidebar bg-dark'>
-                <Link id='logo' to='/'>WebMonitor</Link>
                 <div className='list-group'>
                     <Link exact to='/' activeClassName='active' className='list-group-item list-group-item-action'>
                         <i className='fa fa-home' aria-hidden='true'></i> Kokpit
