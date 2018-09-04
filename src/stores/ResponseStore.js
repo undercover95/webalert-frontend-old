@@ -12,12 +12,12 @@ class ResponseStore extends EventEmitter {
         };
     }
 
-    getResponse(response){
+    getResponse(response) {
         return this.requestResponses[response];
     }
 
     serviceResultOfAddingMultipleSites(errors, addedSitesCount) {
-        console.log('response',errors, addedSitesCount);
+        console.log('response', errors, addedSitesCount);
         this.requestResponses.addMultipleSitesResponse = {
             errors: errors.errors,
             addedSitesCount: addedSitesCount
@@ -26,7 +26,7 @@ class ResponseStore extends EventEmitter {
     }
 
     serviceResultOfAddingSingleSite(response, siteName) {
-        console.log('response single:',response);
+        console.log('response single:', response);
         this.requestResponses.addSingleSiteResponse = {
             result: response.result,
             siteName: siteName
@@ -35,31 +35,28 @@ class ResponseStore extends EventEmitter {
     }
 
     serviceResultOfRegister(response) {
-        console.log('response serviceResultOfRegister:',response.data);
+        console.log('response serviceResultOfRegister:', response.data);
         this.requestResponses.registerUserResponse = response.data;
         this.emit('registerUserResponse');
     }
 
     serviceResultOfLogin(response) {
-        console.log('response serviceResultOfLogin:',response.data);
-
-        if(response.data.token != undefined) {
-          // logged
-          localStorage.setItem('authToken', response.data.token);
-          localStorage.setItem('logged', true);
-          this.emit('userLoginSuccess');
+        if (response.data.token != undefined) {
+            // logged
+            localStorage.setItem('authToken', response.data.token);
+            this.emit('userLoginSuccess');
         }
 
         else {
-          this.requestResponses.loginUserResponse = response.data;
-          this.emit('loginUserResponse');
+            this.requestResponses.loginUserResponse = response.data;
+            this.emit('loginUserResponse');
         }
     }
 
-    handleActions(action){
+    handleActions(action) {
         const type = action.type;
 
-        switch(type) {
+        switch (type) {
             case 'ADD_SINGLE_SITE':
                 this.serviceResultOfAddingSingleSite(action.response.data, action.siteName)
                 break;
@@ -69,9 +66,9 @@ class ResponseStore extends EventEmitter {
             case 'REGISTER_REQUEST_COMPLETED':
                 this.serviceResultOfRegister(action.data)
                 break;
-          case 'LOGIN_REQUEST_COMPLETED':
-            this.serviceResultOfLogin(action.data)
-            break;
+            case 'LOGIN_REQUEST_COMPLETED':
+                this.serviceResultOfLogin(action.data)
+                break;
         }
     }
 }

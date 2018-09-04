@@ -1,4 +1,4 @@
-import Dispather from '../../Dispatcher';
+import Dispather from '../Dispatcher';
 
 const axios = require('axios');
 const qs = require('qs');
@@ -15,7 +15,6 @@ const getHeaders = () => {
 
 export function registerUser(userData) {
     let data = qs.stringify({
-        'username': userData.get('username'),
         'password': userData.get('password'),
         'password2': userData.get('password2'),
         'email': userData.get('email'),
@@ -40,7 +39,7 @@ export function registerUser(userData) {
 
 export function loginUser(userData) {
     let data = qs.stringify({
-        'username': userData.get('username'),
+        'mail': userData.get('mail'),
         'password': userData.get('password')
     });
 
@@ -63,6 +62,10 @@ export function loginUser(userData) {
 
 export function logoutUser() {
     localStorage.removeItem('authToken');
+
+    localStorage.removeItem('siteData');
+    localStorage.removeItem('statsData');
+    localStorage.removeItem('checkedSites');
 }
 
 /*export function checkIfUserIsLogged() {

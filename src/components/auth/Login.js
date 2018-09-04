@@ -1,6 +1,6 @@
 import React from 'react';
 import ResponseStore from 'stores/ResponseStore';
-import * as AuthService from './AuthService';
+import * as AuthService from '../../actions/AuthService';
 
 import {
   NavLink as Link,
@@ -10,8 +10,6 @@ import {
 export default class Login extends React.Component {
 
   componentDidMount() {
-    document.title = 'Logowanie | Monitor stron internetowych'
-
     if (AuthService.getToken()) {
       this.setState({
         redirect: true
@@ -26,7 +24,7 @@ export default class Login extends React.Component {
     this.redirectAfterLogin = this.redirectAfterLogin.bind(this);
 
     this.state = {
-      beforeSend: '',
+      waiting: false,
       responses: {},
       redirect: false
     }
@@ -35,7 +33,7 @@ export default class Login extends React.Component {
   getResponse() {
     setTimeout(() => {
       this.setState({
-        beforeSend: '',
+        waiting: false,
         responses: ResponseStore.getResponse('loginUserResponse')
       });
     }, 500);
@@ -44,7 +42,7 @@ export default class Login extends React.Component {
   redirectAfterLogin() {
     setTimeout(() => {
       this.setState({
-        beforeSend: '',
+        waiting: false,
         responses: {},
         redirect: true
       });
@@ -66,7 +64,7 @@ export default class Login extends React.Component {
     const data = new FormData(event.target);
 
     this.setState({
-      beforeSend: <span><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Trwa logowanie...</span>,
+      waiting: true,
       responses: {}
     });
     AuthService.loginUser(data);
@@ -74,7 +72,7 @@ export default class Login extends React.Component {
 
   render() {
 
-    let beforeSend = this.state.beforeSend;
+    let waiting = this.state.waiting;
     let responses = this.state.responses;
 
     if (this.state.redirect) {
@@ -92,12 +90,12 @@ export default class Login extends React.Component {
                 <form onSubmit={this.handleSubmit}>
 
                   <div className="form-group">
-                    <label htmlFor="usernameInput">Nazwa użytkownika:</label>
+                    <label htmlFor="usernameInput">Adres e-mail:</label>
                     <div className="input-group">
                       <div className="input-group-prepend">
                         <span className="input-group-text" id="username-addon"><i className="fa fa-user" aria-hidden="true"></i></span>
                       </div>
-                      <input type="text" className="form-control" id="usernameInput" name="username" placeholder="Nazwa użytkownika" aria-describedby="username-addon" />
+                      <input type="text" className="form-control" id="usernameInput" name="mail" placeholder="Adres e-mail" aria-describedby="username-addon" />
                     </div>
                   </div>
 
@@ -112,8 +110,8 @@ export default class Login extends React.Component {
                   </div>
 
                   <div className="form-group mt-3 text-center">
-                    <button type="submit" className="btn btn-primary btn-block mb-3" disabled={beforeSend == '' ? false : true}>{
-                      beforeSend != '' ? beforeSend : 'Zaloguj'}</button>
+                    <button type="submit" className="btn btn-primary btn-block mb-3" disabled={waiting}>{
+                      waiting ? <span><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Trwa logowanie...</span> : 'Zaloguj'}</button>
 
                     <div>
                       {

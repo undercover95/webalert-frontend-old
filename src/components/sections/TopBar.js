@@ -17,7 +17,7 @@ import {
 
 import jwt_decode from 'jwt-decode';
 
-import * as AuthService from '../auth/AuthService';
+import * as AuthService from '../../actions/AuthService';
 
 class TopBar extends React.Component {
   constructor() {
@@ -43,25 +43,29 @@ class TopBar extends React.Component {
           <Link to='/' className='navbar-brand'>Monitor stron</Link>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav navbar>
-              <NavItem>
-                <Link to='/' activeClassName='active' className='nav-link'>
-                  <i className='fa fa-home' aria-hidden='true'></i> Kokpit
+            {
+              AuthService.getToken() ? (
+                <Nav navbar>
+                  <NavItem>
+                    <Link to='/' activeClassName='active' className='nav-link'>
+                      <i className='fa fa-home' aria-hidden='true'></i> Kokpit
                     </Link>
-              </NavItem>
-              <NavItem>
-                <Link to='/addPage' activeClassName='active' className='nav-link'>
-                  <i className='fa fa-plus-circle' aria-hidden='true'></i> Dodaj witrynę
+                  </NavItem>
+                  <NavItem>
+                    <Link to='/addPage' activeClassName='active' className='nav-link'>
+                      <i className='fa fa-plus-circle' aria-hidden='true'></i> Dodaj witrynę
                     </Link>
-              </NavItem>
-            </Nav>
+                  </NavItem>
+                </Nav>
+              ) : ''
+            }
             {
               AuthService.getToken() ? (
                 <Nav className='ml-auto' navbar>
                   <NavItem>
-                    <span className={'navbar-text mr-3'}>Zalogowano jako&nbsp;<i className='fa fa-user-circle-o' aria-hidden='true'></i> {
-                      jwt_decode(AuthService.getToken()).user.username
-                    }
+                    <span className={'navbar-text mr-3'}><i className='fa fa-user-circle-o' aria-hidden='true'></i> Witaj,&nbsp;<span className={'font-weight-bold'}>{
+                      jwt_decode(AuthService.getToken()).user.mail_address
+                    }</span>
                     </span>
                   </NavItem>
                   <NavItem>

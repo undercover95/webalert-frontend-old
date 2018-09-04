@@ -1,5 +1,5 @@
 import React from 'react';
-import * as AuthService from './AuthService';
+import * as AuthService from '../../actions/AuthService';
 
 import {
   NavLink as Link,

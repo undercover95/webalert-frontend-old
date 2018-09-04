@@ -68,7 +68,7 @@ class Mailer:
     def send_email(self, msg_subject, msg_content):
 
         sg = sendgrid.SendGridAPIClient(
-            apikey='apikey'
+            apikey=configFile['sendgrid']['api_key']
         )
 
         from_email = Email(
@@ -372,11 +372,11 @@ if __name__ == '__main__':
 
     import json
     with open('config.json') as f:
-        conf = json.load(f)
+        configFile = json.load(f)
 
-    conf = conf['db_props']
-    db = Database(conf['username'], conf['password'],
-                  conf['hostname'], conf['db_name'])
+    dbconf = configFile['db_props']
+    db = Database(dbconf['username'], dbconf['password'],
+                  dbconf['hostname'], dbconf['db_name'])
     mailer = Mailer('mbularz95@interia.pl')
 
     if not interval is None:

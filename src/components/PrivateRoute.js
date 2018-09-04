@@ -5,7 +5,7 @@ import {
   Route
 } from 'react-router-dom'
 
-import * as AuthService from './auth/AuthService';
+import * as AuthService from '../actions/AuthService';
 
 const PrivateRoute = ({ component: Component, ...rest }) => {
   return (

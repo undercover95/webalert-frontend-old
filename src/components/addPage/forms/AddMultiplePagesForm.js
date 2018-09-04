@@ -12,7 +12,7 @@ export default class AddMultiplePagesForm extends React.Component {
         this.handleSubmit = this.handleSubmit.bind(this);
         this.getResponse = this.getResponse.bind(this);
         this.state = {
-            beforeSend: '',
+            waiting: false,
             response: {
                 addedSitesCount: 0,
                 errors: null
@@ -22,7 +22,7 @@ export default class AddMultiplePagesForm extends React.Component {
 
     getResponse() {
         this.setState({
-            beforeSend: '',
+            waiting: false,
             response: ResponseStore.getResponse('addMultipleSitesResponse')
         });
     }
@@ -40,7 +40,7 @@ export default class AddMultiplePagesForm extends React.Component {
         const data = new FormData(event.target);
 
         this.setState({
-            beforeSend: <div className='mt-3'><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Trwa dodawanie stron...</div>
+            waiting: true
         });
 
         Actions.addMultipleSites(data.get('urls'));
@@ -49,7 +49,7 @@ export default class AddMultiplePagesForm extends React.Component {
     render() {
         return (
             <div>
-                <p><i className='fa fa-question-circle' aria-hidden='true'></i> Wpisz adresy witryn które chcesz dodać do monitora, <strong>wpisując je po przecinku.</strong><br/>Przykład: <span style={{'fontStyle': 'italic'}}>example.com.pl, example2.pl, example.org</span></p>
+                <p><i className='fa fa-question-circle' aria-hidden='true'></i> Wpisz adresy witryn które chcesz dodać do monitora, <strong>wpisując je po przecinku.</strong><br />Przykład: <span style={{ 'fontStyle': 'italic' }}>example.com.pl, example2.pl, example.org</span></p>
 
                 <form onSubmit={this.handleSubmit}>
                     <div className='form-group'>
@@ -57,7 +57,9 @@ export default class AddMultiplePagesForm extends React.Component {
                     </div>
                     <button type='submit' className='btn btn-primary'><i className='fa fa-plus-circle' aria-hidden='true'></i> Dodaj wiele witryn</button>
                 </form>
-                <span>{this.state.beforeSend}</span>
+                {
+                    this.state.waiting ? <div className='mt-3'><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Trwa dodawanie stron...</div> : ''
+                }
                 <AddMultiplePagesFormResponse addedSitesCount={this.state.response.addedSitesCount} errors={this.state.response.errors} />
             </div>
         )

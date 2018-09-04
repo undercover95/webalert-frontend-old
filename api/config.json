@@ -1,8 +1,11 @@
 {
-    "db_props": {
-        "hostname": "172.17.0.2",
-        "username": "admin",
-        "password": "1995",
-        "db_name": "page_monitor_db"
-    }
+  "db_props": {
+    "hostname": "172.17.0.2",
+    "username": "admin",
+    "password": "1995",
+    "db_name": "page_monitor_db"
+  },
+  "sendgrid": {
+    "api_key": "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"
+  }
 }

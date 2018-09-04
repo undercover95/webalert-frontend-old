@@ -45,18 +45,28 @@ class RefreshAllWebsitesButton extends React.Component {
         const isRefreshing = this.state.isRefreshing;
 
         return (
-            <Button color='info' size='sm' onClick={() => this.updateData()} disabled={isRefreshing || localStorage.getItem('updatingAllSites') ? true : false}>
+            <div>
+                <Button color='info' size='sm' onClick={() => this.updateData()} disabled={isRefreshing || localStorage.getItem('updatingAllSites') ? true : false}>
+                    {
+                        isRefreshing || localStorage.getItem('updatingAllSites') ? (
+                            <span>
+                                <div><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Trwa odświeżanie...</div>
+                            </span>
+                        ) : (
+                                <span><i className='fa fa-refresh' aria-hidden='true'></i> Odśwież wszystko</span>
+                            )
+                    }
+                </Button>
                 {
                     isRefreshing || localStorage.getItem('updatingAllSites') ? (
-                        <span>
-                            <span><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Trwa odświeżanie...</span>
-                            <div className={'loading-overlay'}><div><i className='fa fa-3x fa-spinner fa-spin' aria-hidden='true'></i><br />Trwa odświeżanie wszystkich witryn...<br /><small>Proszę czekać</small><p><i className={'fa fa-exclamation-triangle'}></i> Czas potrzebny na wykonanie pełnego odświeżenia<br />jest zależny od liczby monitorowanych stron.</p></div></div>
-                        </span>
-                    ) : (
-                            <span><i className='fa fa-refresh' aria-hidden='true'></i> Odśwież wszystko</span>
-                        )
+                        <div className={'loading-msg'}>
+                            <div><i className='fa fa-2x fa-spinner fa-spin' aria-hidden='true'></i><br />
+                                Trwa odświeżanie wszystkich witryn...<br /><small>Proszę czekać</small>
+                                <p><i className={'fa fa-exclamation-triangle'}></i> Czas potrzebny na wykonanie pełnego odświeżenia<br />jest zależny od liczby monitorowanych stron.</p>
+                            </div>
+                        </div>) : ''
                 }
-            </Button>
+            </div>
         );
     }
 }

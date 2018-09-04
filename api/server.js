@@ -1,10 +1,12 @@
 var express = require('express')
 const jwt = require('jsonwebtoken');
+var jwt_decode = require('jwt-decode');
 var request = require('request');
 var app = express()
 
 var mysql = require('mysql')
 var bodyParser = require('body-parser');
+var passwordHash = require('password-hash');
 var exec = require('child_process').exec;
 const config = require('./config.json');
 
@@ -50,10 +52,10 @@ app.listen(port, function () {
 /* /////////////////// */
 
 app.post('/login', (req, res) => {
-  const username = req.body.username;
+  const mail = req.body.mail;
   const password = req.body.password;
 
-  if (username == undefined || password == undefined) {
+  if (mail == undefined || password == undefined) {
     res.sendStatus(403);
   }
 
@@ -62,7 +64,7 @@ app.post('/login', (req, res) => {
 
   // check if user exists
   checkUserSql =
-    'SELECT * FROM `users` WHERE `username`=\'' + username + '\' LIMIT 1';
+    'SELECT * FROM `users` WHERE `mail_address`=\'' + mail + '\' LIMIT 1';
 
   con.query(checkUserSql, function (err, result) {
     if (err) {
@@ -74,7 +76,7 @@ app.post('/login', (req, res) => {
         // user exists
         user = result[0];
 
-        if (user.password == password) {
+        if (passwordHash.verify(password, user.password)) {
           // password ok
           console.log('passwd ok')
 
@@ -132,25 +134,22 @@ app.get('/checkIfUserIsLogged', verifyToken, (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  console.log(req.body);
-  const username = req.body.username;
+
+  const email = req.body.email;
   const password = req.body.password;
   const password2 = req.body.password2;
-  const email = req.body.email;
   const recaptcha = req.body.recaptchaResponse;
 
   let errors = {};
 
-  if (username == '') {
-    errors['user_err'] = 'Nie podano nazwy użytkownika!';
+  if (email == '') {
+    errors['email_err'] = 'Nie podano adresu e-mail!';
   } else {
-    if (username.length >= 4 && username.length <= 50) {
-      if (!/^[a-z0-9]+$/i.test(username)) {
-        errors['user_err'] =
-          'Nazwa użytkownika musi zawierać znaki alfanumeryczne!';
-      }
-    } else {
-      errors['user_err'] = 'Nazwa użytkownika musi zawierać od 4 do 50 znaków!';
+    let re =
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    if (!re.test(String(email).toLowerCase())) {
+      errors['email_err'] = 'Niepoprawny adres e-mail!';
     }
   }
 
@@ -164,18 +163,7 @@ app.post('/register', (req, res) => {
     }
   }
 
-  if (email == '') {
-    errors['email_err'] = 'Nie podano adresu e-mail!';
-  } else {
-    let re =
-      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-
-    if (!re.test(String(email).toLowerCase())) {
-      errors['email_err'] = 'Niepoprawny adres e-mail!';
-    }
-  }
-
-  if (recaptcha != 'true') {
+  if (recaptcha == '') {
     errors['captcha_err'] = 'Nie zaznaczono captcha!';
   } else {
     let secretKey = '6Lc930YUAAAAAPMB6yeZbRA4J1mB1_D0opaXJifu';
@@ -201,21 +189,21 @@ app.post('/register', (req, res) => {
     console.log('check if username already exists');
     // check if username already exists
     const checkUserSql =
-      'SELECT * FROM `users` WHERE `username`=\'' + username + '\' LIMIT 1';
+      'SELECT * FROM `users` WHERE `mail_address`=\'' + email + '\' LIMIT 1';
 
     con.query(checkUserSql, (err, result) => {
       if (err) {
         throw err;
       } else if (result.length != 0) {
-        errors['user_err'] =
-          'Użytkownik o podanej nazwie już istnieje. Proszę wybrać inną nazwę.';
+        errors['email_err'] =
+          'Użytkownik o podanym adresie e-mail już istnieje. Proszę wybrać inny adres e-mail.';
         res.json(errors);
         return;
       }
 
       const addUserSql =
-        'INSERT INTO `users` (`username`,`password`,`mail_address`) VALUES(\'' +
-        username + '\', \'' + password + '\', \'' + email + '\')';
+        'INSERT INTO `users` (`mail_address`,`password`) VALUES(\'' +
+        email + '\', \'' + passwordHash.generate(password) + '\')';
 
       con.query(addUserSql, (err, result) => {
         if (err)
@@ -234,8 +222,10 @@ app.get('/getLastAllPagesStatus', verifyToken, function (req, res) {
     if (err) {
       res.sendStatus(403);
     } else {
+      const user_id = jwt_decode(req.token).user.id;
+
       const getPagesSql =
-        'SELECT site.`url`, last_status.*, `status_codes`.`short_desc`,`status_codes`.`long_desc` FROM `pages` site JOIN `pages_status` last_status ON site.`id` = last_status.`site_id` LEFT JOIN `status_codes` ON `status_codes`.`status_code`=`last_status`.`status_code` LEFT JOIN `pages_status` not_last_status ON ( site.`id` = `not_last_status`.`site_id` AND last_status.`last_checked` < not_last_status.`last_checked` ) WHERE not_last_status.`site_id` IS NULL ORDER BY status_code, site.`url`';
+        'SELECT site.`url`, last_status.*, `status_codes`.`short_desc`,`status_codes`.`long_desc` FROM `pages` site JOIN `pages_status` last_status ON site.`id` = last_status.`site_id` AND site.`user_id` = ' + user_id + ' LEFT JOIN `status_codes` ON `status_codes`.`status_code`=`last_status`.`status_code` LEFT JOIN `pages_status` not_last_status ON ( site.`id` = `not_last_status`.`site_id` AND last_status.`last_checked` < not_last_status.`last_checked` ) WHERE not_last_status.`site_id` IS NULL ORDER BY status_code, site.`url` ';
 
       con.query(getPagesSql, function (err, result) {
         if (err)
@@ -253,10 +243,11 @@ app.post('/getLastPageStatus', verifyToken, function (req, res) {
       res.sendStatus(403);
     } else {
       const site_id = req.body.id;
+      const user_id = jwt_decode(req.token).user.id;
 
       const getLastPageStatusSql =
         'SELECT `pages`.`url`, `pages_status`.*, `status_codes`.`short_desc`,`status_codes`.`long_desc` FROM `pages`,`pages_status` LEFT JOIN `status_codes` ON `status_codes`.`status_code`=`pages_status`.`status_code` WHERE `pages_status`.`site_id`=`pages`.`id` AND `pages`.`id`=\'' +
-        site_id + '\' ORDER BY `last_checked` DESC LIMIT 1';
+        site_id + '\' AND `pages`.`user_id`=' + user_id + ' ORDER BY `last_checked` DESC LIMIT 1';
 
       con.query(getLastPageStatusSql, function (err, result) {
         if (err)
@@ -274,8 +265,9 @@ app.post('/addSinglePage', verifyToken, function (req, res) {
       res.sendStatus(403);
     } else {
       const url = req.body.url;
+      const user_id = jwt_decode(req.token).user.id;
 
-      const addPageSql = 'INSERT INTO `pages` (`url`) VALUES (\'' + url + '\')';
+      const addPageSql = 'INSERT INTO `pages` (`url`, `user_id`) VALUES (\'' + url + '\', ' + user_id + ')';
 
       con.query(addPageSql, function (err, result) {
         if (err)
@@ -293,12 +285,12 @@ app.post('/addMultiplePages', verifyToken, function (req, res) {
       res.sendStatus(403);
     } else {
       const sites = req.body.sites;
+      const user_id = jwt_decode(req.token).user.id;
 
       let nonAddedPages = []
 
       sites.forEach(site => {
-        let insertPageSql =
-          'INSERT INTO `pages` (`url`) VALUES (\'' + site + '\')';
+        let insertPageSql = 'INSERT INTO `pages` (`url`, `user_id`) VALUES (\'' + site + '\', ' + user_id + ')';
 
         con.query(insertPageSql, function (err, result) {
           if (err) nonAddedPages.push(site);
@@ -316,9 +308,10 @@ app.post('/removePage', verifyToken, function (req, res) {
       res.sendStatus(403);
     } else {
       const id = req.body.id;
+      const user_id = jwt_decode(req.token).user.id;
 
       if (id != undefined) {
-        const removePageSql = 'DELETE FROM `pages` WHERE `pages`.`id` = ' + id;
+        const removePageSql = 'DELETE FROM `pages` WHERE `pages`.`id`=' + id + ' AND `pages`.`user_id`=' + user_id;
 
         con.query(removePageSql, function (err, result) {
           if (err)
@@ -337,6 +330,8 @@ app.get('/refreshAllPagesStatus', verifyToken, function (req, res) {
     if (err) {
       res.sendStatus(403);
     } else {
+      const user_id = jwt_decode(req.token).user.id;
+
       exec('/usr/bin/python2 updatePagesStatus.py', function (err, stdout, stderr) {
         if (err) {
           //console.log('err', stderr);
@@ -357,6 +352,7 @@ app.post('/refreshSinglePageStatus', verifyToken, function (req, res) {
       res.sendStatus(403);
     } else {
       const site_id = req.body.id;
+      const user_id = jwt_decode(req.token).user.id;
 
       exec('/usr/bin/python2 updatePagesStatus.py ' + site_id, function (err, stdout, stderr) {
         if (err) {
@@ -379,12 +375,10 @@ app.post('/getResponseTimeForPeriod', verifyToken, function (req, res) {
     } else {
       const site_id = req.body.id;
       const period = req.body.period;
+      const user_id = jwt_decode(req.token).user.id;
 
       const getResponseTimeSql =
-        'SELECT * FROM `pages_status` LEFT JOIN `pages` ON `pages`.`id`=`site_id` WHERE `pages`.`id`=\'' +
-        site_id +
-        '\' AND `pages_status`.`last_checked`>=DATE_SUB(NOW(),INTERVAL ' +
-        period + ' HOUR)';
+        'SELECT * FROM `pages_status` LEFT JOIN `pages` ON `pages`.`id`=`site_id` WHERE `pages`.`id`=\'' + site_id + '\' AND `pages_status`.`last_checked`>=DATE_SUB(NOW(),INTERVAL ' + period + ' HOUR) AND `pages`.`user_id`=' + user_id;
 
       con.query(getResponseTimeSql, function (err, result) {
         if (err)
@@ -397,7 +391,7 @@ app.post('/getResponseTimeForPeriod', verifyToken, function (req, res) {
 })
 
 
-
+/*
 app.post('/getReports', verifyToken, function (req, res) {
   jwt.verify(req.token, 'secretkey', (err, authData) => {
     if (err) {
@@ -456,7 +450,4 @@ app.get('/getNewReportsCounter', verifyToken, function (req, res) {
       });
     }
   });
-})
-
-app.get(
-  '/runCheckingStatusPagesPeriodically', verifyToken, function (req, res) { })
+})*/

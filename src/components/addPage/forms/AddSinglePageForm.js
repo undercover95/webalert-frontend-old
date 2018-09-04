@@ -9,20 +9,21 @@ export default class AddSinglePageForm extends React.Component {
 
     constructor() {
         super();
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.getResponse = this.getResponse.bind(this);
         this.state = {
-            beforeSend: '',
+            waiting: false,
             response: {
                 result: null,
                 siteName: ''
             }
         };
+
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.getResponse = this.getResponse.bind(this);
     }
 
     getResponse() {
         this.setState({
-            beforeSend: '',
+            waiting: false,
             response: ResponseStore.getResponse('addSingleSiteResponse')
         });
     }
@@ -40,7 +41,7 @@ export default class AddSinglePageForm extends React.Component {
         const data = new FormData(event.target);
 
         this.setState({
-            beforeSend: <div className='mt-3'><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Trwa dodawanie strony {data.get('url')}...</div>
+            waiting: true
         });
 
         Actions.addSingleSite(data.get('url'));
@@ -52,11 +53,13 @@ export default class AddSinglePageForm extends React.Component {
                 <form onSubmit={this.handleSubmit}>
                     <div className='form-group'>
                         <label htmlFor='addPage'>Adres witryny:</label>
-                        <input type='text' id='addPage' name='url' className='form-control' placeholder='Wpisz adres witryny' required/>
+                        <input type='text' id='addPage' name='url' className='form-control' placeholder='Wpisz adres witryny' required />
                     </div>
                     <button type='submit' className='btn btn-primary'><i className='fa fa-plus-circle' aria-hidden='true'></i> Dodaj witrynę</button>
                 </form>
-                <span>{this.state.beforeSend}</span>
+                {
+                    this.state.waiting ? <div className='mt-3'><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Trwa dodawanie strony...</div> : ''
+                }
                 <AddSinglePageFormResponse siteName={this.state.response.siteName} result={this.state.response.result} />
             </div>
         )

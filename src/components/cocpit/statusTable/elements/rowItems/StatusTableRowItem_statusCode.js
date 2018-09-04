@@ -34,15 +34,6 @@ const StatusTableRowItem_statusCode = (props) => {
       <span className={'badge ' + badgeClass}>
         {(code == null || code == undefined || code == -1 || code == -2 ? '-' : code)}
       </span>&nbsp;
-      {
-        <span className='status-code-description'>
-          <small>
-            {short_desc == null ? '' : short_desc}
-          </small>
-        </span>
-      }
-
-
       <span>
         {
           // popover help

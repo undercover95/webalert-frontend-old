@@ -6,8 +6,8 @@ class SiteDataStore extends EventEmitter {
 
     constructor() {
         super();
-        this.siteData = localStorage.getItem('siteData') ? JSON.parse(localStorage.getItem('siteData')) : {};
-        this.checkedSites = localStorage.getItem('checkedSites') ? localStorage.getItem('checkedSites') : [];
+        this.siteData = {};
+        this.checkedSites = [];
     }
 
     getAllSitesData() {
@@ -40,7 +40,7 @@ class SiteDataStore extends EventEmitter {
 
         if (!this.checkedSites.includes(site_id)) {
             this.checkedSites.push(site_id);
-            localStorage.setItem('checkedSites', this.checkedSites)
+
             this.emit('checkedSiteChange');
         }
     }
@@ -49,7 +49,7 @@ class SiteDataStore extends EventEmitter {
 
         if (this.checkedSites.includes(site_id)) {
             this.checkedSites.splice(this.checkedSites.indexOf(site_id), 1);
-            localStorage.setItem('checkedSites', this.checkedSites)
+
             this.emit('checkedSiteChange');
         }
     }
@@ -62,7 +62,6 @@ class SiteDataStore extends EventEmitter {
             this.siteData[dataRow.site_id] = dataRow
         });
 
-        localStorage.setItem('siteData', JSON.stringify(this.siteData))
         this.emit('change');
         this.emit('counterChange');
     }
@@ -70,25 +69,10 @@ class SiteDataStore extends EventEmitter {
     updateSingleSiteData(data) {
         const tempSingleSiteData = data.result[0];
         this.siteData[tempSingleSiteData.site_id] = tempSingleSiteData
-        localStorage.setItem('siteData', JSON.stringify(this.siteData))
 
         this.emit('singleSiteStatusUpdated_id=' + tempSingleSiteData.site_id);
         this.emit('change');
         this.emit('counterChange');
-    }
-
-    checkIfSiteWorking(http_code) {
-        if (http_code == null) return;
-        else if ((http_code >= 400 && http_code < 600) || http_code < 0 || http_code == 310) return false;
-        else return true;
-    }
-
-    getCounters() {
-        return {
-            all: Object.keys(this.siteData).length,
-            notWorking: Object.values(this.siteData).filter(siteDataElem => !this.checkIfSiteWorking(siteDataElem.status_code)).length,
-            working: Object.values(this.siteData).filter(siteDataElem => this.checkIfSiteWorking(siteDataElem.status_code)).length
-        }
     }
 
     checkAllSites() {

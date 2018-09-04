@@ -2,27 +2,23 @@ import React from 'react';
 import Recaptcha from 'react-recaptcha';
 import ResponseStore from 'stores/ResponseStore';
 
-import * as AuthService from './AuthService';
+import * as AuthService from '../../actions/AuthService';
 export default class Register extends React.Component {
 
   constructor() {
     super();
     this.handleSubmit = this.handleSubmit.bind(this);
     this.getResponse = this.getResponse.bind(this);
-
+    //<div className='mt-3'><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Trwa rejestracja...</div>
     this.state = {
-      beforeSend: '',
+      waiting: false,
       responses: {}
     };
   }
 
-  componentDidMount() {
-    document.title = 'Rejestracja | Monitor stron internetowych'
-  }
-
   getResponse() {
     this.setState({
-      beforeSend: '',
+      waiting: false,
       responses: ResponseStore.getResponse('registerUserResponse')
     });
   }
@@ -40,7 +36,7 @@ export default class Register extends React.Component {
     const data = new FormData(event.target);
 
     this.setState({
-      beforeSend: <div className='mt-3'><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Trwa rejestracja...</div>
+      waiting: true
     });
     AuthService.registerUser(data);
     grecaptcha.reset();
@@ -55,22 +51,6 @@ export default class Register extends React.Component {
               <div className="card-body">
                 <h3 className="text-center mb-3"><i className="fa fa-user-plus" aria-hidden="true"></i><br />Zarejestruj się</h3>
                 <form onSubmit={this.handleSubmit}>
-
-                  <div className="form-group">
-                    <label htmlFor="usernameInput">Nazwa użytkownika:</label>
-                    <div className="input-group">
-                      <div className="input-group-prepend">
-                        <span className="input-group-text" id="username-addon">
-                          <i className="fa fa-user" aria-hidden="true"></i>
-                        </span>
-                      </div>
-                      <input type="text" className="form-control" id="usernameInput" name="username" placeholder="Nazwa użytkownika" aria-describedby="username-addon" />
-                    </div>
-                  </div>
-                  <div id="user_err_container">
-                    {this.state.responses['user_err'] != undefined ? (
-                      <div className="alert alert-danger"><i className='fa fa-exclamation-circle'></i> {this.state.responses['user_err']}</div>
-                    ) : ''}</div>
 
                   <div className="form-group">
                     <label htmlFor="emailInput">Adres email:</label>

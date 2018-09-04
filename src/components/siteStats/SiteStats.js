@@ -1,8 +1,7 @@
 import React from 'react';
 
-import StatsStore from 'stores/StatsStore';
 import SiteDataStore from 'stores/SiteDataStore';
-import * as Actions from 'actions/Actions';
+import * as Actions from 'actions/SiteStatsActions';
 
 import SiteStatsTitle from './SiteStatsTitle';
 import TimeResponseChart from './TimeResponseChart';
@@ -16,30 +15,16 @@ export default class SiteStats extends React.Component {
         super();
         this.state = {
             data: [],
-            beforeSend: null
+            waitingForData: false
         };
-        this.getData = this.getData.bind(this);
-    }
-
-    componentWillMount() {
-        StatsStore.on('statsDataChange', this.getData);
-
-    }
-
-    componentWillUnmount() {
-        StatsStore.removeListener('statsDataChange', this.getData);
     }
 
     componentDidMount() {
         this.siteUrl = SiteDataStore.getSiteUrlById(this.props.match.params.id);
-        document.title = 'Statystyki witryny ' + this.siteUrl + ' | Monitor stron internetowych';
-        Actions.getResponseTimeData(this.props.match.params.id, this.period);
-    }
 
-    getData() {
+        const res = Actions.getResponseTimeData(this.props.match.params.id, this.period); // promise
         this.setState({
-            data: StatsStore.getData(),
-            beforeSend: null
+            data: res
         });
     }
 
@@ -63,7 +48,7 @@ export default class SiteStats extends React.Component {
         this.period = period;
 
         this.setState({
-            beforeSend: <div className='mt-3'><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Wczytuję dane...</div>
+            waitingForData: true
         })
 
         Actions.getResponseTimeData(this.props.match.params.id, this.period);
@@ -99,7 +84,7 @@ export default class SiteStats extends React.Component {
                     </div>
                     <div className='card-body'>
                         {
-                            this.state.beforeSend == null ? (
+                            this.state.waitingForData ? (
                                 emptyData ? (
                                     <div className='alert alert-info'>
                                         <h5 className='alert-heading'><i className='fa fa-info-circle'></i> Brak danych do wyświetlenia.</h5>
@@ -114,7 +99,7 @@ export default class SiteStats extends React.Component {
                                             <TimeResponseChart data={this.getDataForChart()} />
                                         </div>
                                     )
-                            ) : this.state.beforeSend
+                            ) : <div className='mt-3'><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Wczytuję dane...</div>
                         }
 
                     </div>
