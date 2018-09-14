@@ -29,8 +29,8 @@ export default class Cocpit extends React.Component {
     }
 
     componentWillUnmount() {
-        //clearInterval(this.cyclicUpdateIntervalId);
         SiteDataStore.removeListener('change', this.getData);
+        clearInterval(this.periodicUpdate);
     }
 
     componentDidMount() {
@@ -39,15 +39,19 @@ export default class Cocpit extends React.Component {
         });
 
         Actions.getLatestAllSitesStatus();
+        this.periodicUpdate = setInterval(() => {
+            Actions.getLatestAllSitesStatus();
+        }, 60000)
+
+        Actions.getLatestAllSitesStatus();
     }
 
     render() {
-        const data = this.state.data;
         return (
             <div>
                 <Title title='Kokpit' icon='fa-home' />
-                <Overview data={data} />
-                <StatusTable data={data} waitingForData={this.state.waitingForData} />
+                <Overview data={this.state.data} />
+                <StatusTable data={this.state.data} waitingForData={this.state.waitingForData} />
             </div>
         )
     }

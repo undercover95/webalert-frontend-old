@@ -22,7 +22,6 @@ export default class StatusTableBottomToolbar extends React.Component {
         this.setState({
             checkedSites: SiteDataStore.getCheckedSites()
         });
-        console.log('checked sites', this.state.checkedSites);
     }
 
     componentWillMount() {
@@ -40,7 +39,6 @@ export default class StatusTableBottomToolbar extends React.Component {
         switch (data.get('operation')) {
             case '1':
                 // refresh checked
-                console.log('refresh checked', this.state);
                 this.state.checkedSites.map(site_id => {
                     ((site_id) => {
                         Actions.updateSingleSiteStatus(site_id);
@@ -49,7 +47,6 @@ export default class StatusTableBottomToolbar extends React.Component {
                 break;
             case '2':
                 // remove checked
-                console.log('remove checked');
                 if (confirm('Czy na pewno usunąć wybrane witryny z monitora?')) {
                     this.state.checkedSites.map(site_id => {
                         ((site_id) => {
@@ -83,7 +80,7 @@ export default class StatusTableBottomToolbar extends React.Component {
                         <Form className='form-inline' onSubmit={this.handleSubmit}>
                             <FormGroup className='mr-2'>
                                 <Label for='selectOperation' className='mr-2'>Z zaznaczonymi:</Label>
-                                <Input type="select" name="operation" id="selectOperation" className='' size='sm'>
+                                <Input type="select" name="operation" size='sm'>
                                     <option value='0'>Wybierz opcję</option>
                                     <option value='1'>Odśwież zaznaczone</option>
                                     <option value='2'>Usuń zaznaczone</option>

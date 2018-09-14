@@ -19,16 +19,6 @@ export function getResponseTimeData(site_id, period) {
     period == null || period == undefined || period == '')
     return;
 
-  axios.post(apihost + '/getResponseTimeForPeriod', data, getHeaders())
-    .then(
-      (res) => {
-        return res.data;
-      })
-    .catch(
-      (err) => {
-        if (err.response) {
-          if (err.response.status == 403) alert('Nie można wykonać akcji getResponseTimeData! Nie jesteś zalogowany!')
-        }
-        else console.log('AXIOS getResponseTimeData FAILED', err)
-      });
+  let res = axios.post(apihost + '/getResponseTimeForPeriod', data, getHeaders());
+  return res;
 }

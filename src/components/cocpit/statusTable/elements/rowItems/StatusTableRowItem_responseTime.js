@@ -7,7 +7,7 @@ const StatusTableRowItem_responseTime = (props) => {
     return (
         <td>
             {
-                (last_response_time == null || last_response_time == '' || last_response_time == undefined) ? '-' : <span><i className='fa fa-clock-o' aria-hidden='true'></i> {last_response_time} s</span>
+                (last_response_time == null || last_response_time == '' || last_response_time == undefined) ? '-' : <span><i className='fa fa-clock-o' aria-hidden='true'></i> {last_response_time}&nbsp;s</span>
             }
         </td>
     );

@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install -y \
         npm \
         python-pip \
         libcurl4-openssl-dev \
-        libssl-dev
+        libssl-dev \
+	cron
 
 RUN pip install \
         pycurl \
@@ -21,4 +22,9 @@ RUN npm install
 
 EXPOSE 3000
 
-CMD [ "npm", "start" ]
+# Crontab
+COPY crontab /etc/cron.d/global-updater
+RUN chmod 0644 /etc/cron.d/global-updater
+
+# Run Node JS server and Crontab
+CMD [ "sh", "-c", "/etc/init.d/cron start && npm start" ]

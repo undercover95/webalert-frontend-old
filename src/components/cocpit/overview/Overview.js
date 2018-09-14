@@ -19,42 +19,26 @@ class Overview extends React.Component {
     }
 
     checkIfSiteWorking(http_code) {
-        if (http_code == null) return;
-        else if ((http_code >= 400 && http_code < 600) || http_code < 0 || http_code == 310) return false;
-        else return true;
+        if (http_code == null) return -1;
+        else if ((http_code >= 400 && http_code < 600) || http_code < 0 || http_code == 310) return 0;
+        else return 1;
     }
 
-    getCounters() {
-        const siteData = this.props.data;
-        console.log(this.props.data)
+    getCounters(siteData) {
         return {
             all: siteData.length,
-            notWorking: siteData.filter(siteDataElem => !this.checkIfSiteWorking(siteDataElem.status_code)).length,
-            working: siteData.filter(siteDataElem => this.checkIfSiteWorking(siteDataElem.status_code)).length
+            notWorking: siteData.filter(siteDataElem => this.checkIfSiteWorking(siteDataElem.status_code) == 0).length,
+            working: siteData.filter(siteDataElem => this.checkIfSiteWorking(siteDataElem.status_code) == 1).length
         }
     }
 
-    /*componentWillMount() {
-        SiteDataStore.on('counterChange', this.getCounters);
-    }
-
-    componentWillUnmount() {
-        SiteDataStore.removeListener('counterChange', this.getCounters);
-    }*/
-
-    componentDidMount() {
-        console.log(this.props.data)
-        this.setState({
-            counters: this.getCounters()
-        });
-    }
-
     render() {
+        const counters = this.getCounters(this.props.data)
         return (
             <div className='row mb-4'>
-                <div className='col-md-4'><OverviewItem counter={this.state.counters.all} type='pages-counter' description='Monitorowanych witryn' icon='fa-globe' /></div>
-                <div className='col-md-4'><OverviewItem counter={this.state.counters.working} type='working-counter' description='Działających witryn' icon='fa-check-circle' /></div>
-                <div className='col-md-4'><OverviewItem counter={this.state.counters.notWorking} type='not-working-counter' description='Nie działających witryn' icon='fa-times-circle' /></div>
+                <div className='col-md-4'><OverviewItem counter={counters.all} type='pages-counter' description='Monitorowanych witryn' icon='fa-globe' /></div>
+                <div className='col-md-4'><OverviewItem counter={counters.working} type='working-counter' description='Działających witryn' icon='fa-check-circle' /></div>
+                <div className='col-md-4'><OverviewItem counter={counters.notWorking} type='not-working-counter' description='Nie działających witryn' icon='fa-times-circle' /></div>
             </div>
         );
     }

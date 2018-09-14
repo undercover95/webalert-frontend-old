@@ -335,14 +335,10 @@ footer {
   }
 }
 
-@media(max-width: 768px) {
-  .sidebar {
-    height: 100%;
-  }
-
-  .overview .col-sm-4 {
-    padding-top: 10px;
-    border-right: 0;
+@media(max-width: 1024px) {
+  .mainContainer {
+    width: 100%;
+    max-width: 95%;
   }
 }
 
@@ -363,6 +359,12 @@ footer {
     tbody {
       tr.selected-row {
         background-color: lighten(rgba($default-color, 0.25), 10%) !important;
+      }
+
+      tr {
+        td:nth-child(2) {
+          max-width: 330px;
+        }
       }
     }
   }

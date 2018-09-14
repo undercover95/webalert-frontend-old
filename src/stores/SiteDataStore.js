@@ -63,7 +63,6 @@ class SiteDataStore extends EventEmitter {
         });
 
         this.emit('change');
-        this.emit('counterChange');
     }
 
     updateSingleSiteData(data) {
@@ -72,7 +71,6 @@ class SiteDataStore extends EventEmitter {
 
         this.emit('singleSiteStatusUpdated_id=' + tempSingleSiteData.site_id);
         this.emit('change');
-        this.emit('counterChange');
     }
 
     checkAllSites() {

@@ -99,6 +99,7 @@ class StatusTable extends React.Component {
                             ) : ''
                         ) : ''
                     }
+                    <span className={'float-right small font-weight-light font-italic pt-1'}><i className='fa fa-info-circle' aria-hidden='true'></i> Lista odświeża się automatycznie co minutę.</span>
                 </div>
             </div>
         );

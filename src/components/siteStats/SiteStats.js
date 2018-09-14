@@ -9,8 +9,6 @@ import SiteStatsOverview from './SiteStatsOverview';
 
 export default class SiteStats extends React.Component {
 
-    period = 24;
-
     constructor() {
         super();
         this.state = {
@@ -19,13 +17,32 @@ export default class SiteStats extends React.Component {
         };
     }
 
-    componentDidMount() {
-        this.siteUrl = SiteDataStore.getSiteUrlById(this.props.match.params.id);
+    getData(period = 24) {
+        const site_id = this.props.match.params.id;
+        this.period = period;
 
-        const res = Actions.getResponseTimeData(this.props.match.params.id, this.period); // promise
         this.setState({
-            data: res
+            waitingForData: true
+        })
+
+        Actions.getResponseTimeData(site_id, period).then(res => {
+            let resData = res.data.result;
+            resData.shift();
+
+            this.setState({
+                data: resData,
+                waitingForData: false
+            });
+        }).catch(err => {
+            if (err.response) {
+                if (err.response.status == 403) alert('Nie można wykonać akcji getResponseTimeData! Nie jesteś zalogowany!')
+            }
+            else console.log('AXIOS getResponseTimeData FAILED', err)
         });
+    }
+
+    componentDidMount() {
+        this.getData()
     }
 
     getDataForChart() {
@@ -45,25 +62,17 @@ export default class SiteStats extends React.Component {
 
     handleChange(event) {
         const period = event.target.value;
-        this.period = period;
-
-        this.setState({
-            waitingForData: true
-        })
-
-        Actions.getResponseTimeData(this.props.match.params.id, this.period);
+        this.getData(period)
     }
 
     render() {
         const site_id = this.props.match.params.id;
-
-        let emptyData = false;
-
-        if (this.state.data.length == 0) emptyData = true;
+        const siteUrl = SiteDataStore.getSiteUrlById(site_id);
+        let emptyData = (this.state.data.length == 0 ? true : false);
 
         return (
             <div>
-                <SiteStatsTitle title='Statystyki witryny' sitename={this.siteUrl} icon='fa-pie-chart' />
+                <SiteStatsTitle title='Statystyki witryny' sitename={siteUrl} icon='fa-pie-chart' />
 
                 <div className='card'>
                     <div className='card-header'>
@@ -84,7 +93,7 @@ export default class SiteStats extends React.Component {
                     </div>
                     <div className='card-body'>
                         {
-                            this.state.waitingForData ? (
+                            !this.state.waitingForData ? (
                                 emptyData ? (
                                     <div className='alert alert-info'>
                                         <h5 className='alert-heading'><i className='fa fa-info-circle'></i> Brak danych do wyświetlenia.</h5>
@@ -99,7 +108,7 @@ export default class SiteStats extends React.Component {
                                             <TimeResponseChart data={this.getDataForChart()} />
                                         </div>
                                     )
-                            ) : <div className='mt-3'><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Wczytuję dane...</div>
+                            ) : <div><i className='fa fa-spinner fa-spin' aria-hidden='true'></i> Wczytuję dane...</div>
                         }
 
                     </div>

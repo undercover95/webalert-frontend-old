@@ -210,7 +210,9 @@ app.post('/register', (req, res) => {
           throw err;
         else {
           console.log('zarejestrowano');
-          res.json({});
+          res.json({
+            res: true
+          });
         }
       });
     });
@@ -223,7 +225,7 @@ app.get('/getLastAllPagesStatus', verifyToken, function (req, res) {
       res.sendStatus(403);
     } else {
       const user_id = jwt_decode(req.token).user.id;
-
+      console.log("user_id", user_id)
       const getPagesSql =
         'SELECT site.`url`, last_status.*, `status_codes`.`short_desc`,`status_codes`.`long_desc` FROM `pages` site JOIN `pages_status` last_status ON site.`id` = last_status.`site_id` AND site.`user_id` = ' + user_id + ' LEFT JOIN `status_codes` ON `status_codes`.`status_code`=`last_status`.`status_code` LEFT JOIN `pages_status` not_last_status ON ( site.`id` = `not_last_status`.`site_id` AND last_status.`last_checked` < not_last_status.`last_checked` ) WHERE not_last_status.`site_id` IS NULL ORDER BY status_code, site.`url` ';
 
@@ -231,7 +233,8 @@ app.get('/getLastAllPagesStatus', verifyToken, function (req, res) {
         if (err)
           throw err;
         else
-          res.json({ 'result': result });
+          console.log(result)
+        res.json({ 'result': result });
       });
     }
   });
@@ -259,21 +262,58 @@ app.post('/getLastPageStatus', verifyToken, function (req, res) {
   });
 })
 
+const fixUrlFormat = (url) => {
+  // fix url format
+  if (url.startsWith('http') || url.startsWith('https')) {
+    // good format, remove '/' from end of url if any is
+    let lastChar = url.charAt(url.length - 1);
+    if (lastChar == '/') url = url.slice(0, -1);
+  } else {
+    url = 'http://' + url;
+    let lastChar = url.charAt(url.length - 1);
+    if (lastChar == '/') url = url.slice(0, -1);
+  }
+
+  return url;
+}
+
+Array.prototype.contains = function (element) {
+  return this.indexOf(element) > -1;
+};
+
 app.post('/addSinglePage', verifyToken, function (req, res) {
   jwt.verify(req.token, 'secretkey', (err, authData) => {
     if (err) {
       res.sendStatus(403);
     } else {
-      const url = req.body.url;
+      let url = fixUrlFormat(req.body.url);
       const user_id = jwt_decode(req.token).user.id;
 
-      const addPageSql = 'INSERT INTO `pages` (`url`, `user_id`) VALUES (\'' + url + '\', ' + user_id + ')';
 
-      con.query(addPageSql, function (err, result) {
-        if (err)
-          throw err;
-        else
-          res.json({ result: true });
+
+      let currentPages = [];
+      let getPagesSql = 'SELECT `url` FROM `pages` WHERE `user_id`=' + user_id;
+      con.query(getPagesSql, function (err, result) {
+        if (err) throw err;
+        else {
+          result.map(dataRow => {
+            currentPages.push(dataRow['url'])
+          })
+
+          // remove duplicates
+          if (!currentPages.contains(url)) {
+            const addPageSql = 'INSERT INTO `pages` (`url`, `user_id`) VALUES (\'' + url + '\', ' + user_id + ')';
+
+            con.query(addPageSql, function (err, result) {
+              if (err)
+                throw err;
+              else
+                res.json({ result: true });
+            });
+          } else {
+            res.json({ result: false });
+          }
+        }
       });
     }
   });
@@ -287,17 +327,38 @@ app.post('/addMultiplePages', verifyToken, function (req, res) {
       const sites = req.body.sites;
       const user_id = jwt_decode(req.token).user.id;
 
-      let nonAddedPages = []
+      let currentPages = [];
+      let getPagesSql = 'SELECT `url` FROM `pages` WHERE `user_id`=' + user_id;
 
-      sites.forEach(site => {
-        let insertPageSql = 'INSERT INTO `pages` (`url`, `user_id`) VALUES (\'' + site + '\', ' + user_id + ')';
+      con.query(getPagesSql, function (err, result) {
+        if (err) throw err;
+        else {
+          result.map(dataRow => {
+            currentPages.push(dataRow['url'])
+          });
 
-        con.query(insertPageSql, function (err, result) {
-          if (err) nonAddedPages.push(site);
-        });
+          let nonAddedPages = [];
+
+          sites.forEach(url => {
+
+            url = fixUrlFormat(url);
+
+            // remove duplicates
+            if (currentPages.contains(url)) {
+              nonAddedPages.push(url);
+              return;
+            } else {
+              let insertPageSql = 'INSERT INTO `pages` (`url`, `user_id`) VALUES (\'' + url + '\', ' + user_id + ')';
+
+              con.query(insertPageSql, function (err, result) {
+                if (err) throw err;
+              });
+            }
+          });
+
+          res.json({ 'errors': nonAddedPages });
+        }
       });
-
-      res.json({ 'errors': nonAddedPages });
     }
   });
 })
@@ -332,7 +393,7 @@ app.get('/refreshAllPagesStatus', verifyToken, function (req, res) {
     } else {
       const user_id = jwt_decode(req.token).user.id;
 
-      exec('/usr/bin/python2 updatePagesStatus.py', function (err, stdout, stderr) {
+      exec('/usr/bin/python updatePagesStatus.py -u ' + user_id, function (err, stdout, stderr) {
         if (err) {
           //console.log('err', stderr);
           res.send(err);
@@ -354,7 +415,7 @@ app.post('/refreshSinglePageStatus', verifyToken, function (req, res) {
       const site_id = req.body.id;
       const user_id = jwt_decode(req.token).user.id;
 
-      exec('/usr/bin/python2 updatePagesStatus.py ' + site_id, function (err, stdout, stderr) {
+      exec('/usr/bin/python updatePagesStatus.py -u ' + user_id + ' ' + site_id, function (err, stdout, stderr) {
         if (err) {
           // console.log("err", stderr);
           res.json({ result: false });
