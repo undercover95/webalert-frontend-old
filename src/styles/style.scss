@@ -226,6 +226,16 @@ footer {
     right: 10px;
     z-index: 0 !important;
   }
+
+  &.inactive {
+    .overview-counter {
+      color: #777 !important;
+    }
+
+    .fa {
+      background: #777 !important;
+    }
+  }
 }
 
 #pages-counter {

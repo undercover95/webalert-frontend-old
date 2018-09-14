@@ -38,7 +38,7 @@ class Overview extends React.Component {
             <div className='row mb-4'>
                 <div className='col-md-4'><OverviewItem counter={counters.all} type='pages-counter' description='Monitorowanych witryn' icon='fa-globe' /></div>
                 <div className='col-md-4'><OverviewItem counter={counters.working} type='working-counter' description='Działających witryn' icon='fa-check-circle' /></div>
-                <div className='col-md-4'><OverviewItem counter={counters.notWorking} type='not-working-counter' description='Nie działających witryn' icon='fa-times-circle' /></div>
+                <div className='col-md-4'><OverviewItem counter={counters.notWorking} type='not-working-counter' inactive={counters.notWorking == 0} description='Nie działających witryn' icon='fa-times-circle' /></div>
             </div>
         );
     }
