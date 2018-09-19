@@ -3,6 +3,8 @@ import React from 'react';
 import SiteDataStore from 'stores/SiteDataStore';
 import * as Actions from 'actions/SiteStatsActions';
 
+import humanizeDuration from 'humanize-duration';
+
 import SiteStatsTitle from './SiteStatsTitle';
 import TimeResponseChart from './TimeResponseChart';
 import SiteStatsOverview from './SiteStatsOverview';
@@ -15,6 +17,21 @@ export default class SiteStats extends React.Component {
             data: [],
             waitingForData: false
         };
+
+        this.polishHumanizer = humanizeDuration.humanizer({
+            language: 'shortPl',
+            round: true,
+            languages: {
+                shortPl: {
+                    y: () => 'lat',
+                    mo: () => 'miesięcy',
+                    w: () => 'tygodni',
+                    d: () => 'dni',
+                    h: () => 'godzin',
+                }
+            },
+            largest: 1
+        })
     }
 
     getData(period = 24) {
@@ -101,10 +118,10 @@ export default class SiteStats extends React.Component {
                                     </div>
                                 ) : (
                                         <div>
-                                            <h4><i className='fa fa-check-circle' aria-hidden='true'></i> Podsumowanie <small>z ostatnich <strong>{this.period}</strong> godzin(y)</small></h4>
+                                            <h4><i className='fa fa-check-circle' aria-hidden='true'></i> Podsumowanie <small>z ostatnich <strong>{this.polishHumanizer(this.period * 3600000)}</strong></small></h4>
                                             <SiteStatsOverview data={this.state.data} />
 
-                                            <h4><i className='fa fa-clock-o' aria-hidden='true'></i> Czas odpowiedzi serwera <small>z ostatnich <strong>{this.period}</strong> godzin(y)</small></h4>
+                                            <h4><i className='fa fa-clock-o' aria-hidden='true'></i> Czas odpowiedzi serwera <small>z ostatnich <strong>{this.polishHumanizer(this.period * 3600000)}</strong></small></h4>
                                             <TimeResponseChart data={this.getDataForChart()} />
                                         </div>
                                     )

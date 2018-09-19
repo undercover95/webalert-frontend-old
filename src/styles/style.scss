@@ -303,6 +303,10 @@ footer {
   border: 1px solid #ddd;
   $overviewResponseTimeColor: #34ace1;
 
+  tr {
+    transition: background-color .25s ease;
+  }
+
   tr.overview-header {
     background-color: $overviewResponseTimeColor;
     color: #fff;
@@ -372,6 +376,8 @@ footer {
       }
 
       tr {
+        transition: background-color .25s ease;
+
         td:nth-child(2) {
           max-width: 330px;
         }

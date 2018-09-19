@@ -1,8 +1,6 @@
 import React from 'react';
 import OverviewItem from './OverviewItem';
 
-import SiteDataStore from 'stores/SiteDataStore';
-
 class Overview extends React.Component {
 
     constructor(props) {
