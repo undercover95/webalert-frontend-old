@@ -48,15 +48,15 @@ class Mailer:
                             code_description, timestamp):
         """Send message about not working site"""
 
-        alert_text = "[AWARIA] Strona %s przestała działać!" % site
+        alert_text = "[AWARIA] Strona %s przestala dzialac!" % site
         msg_content = """
             <html>
                 <body>
                     <div style="text-align: center">
                         <div style="background-color: #cc0000; width: 90px; height: 40px; line-height: 40px; color: white; display: inline-block">AWARIA</div>
-                        <h3>Strona <a href="%s" title="Zobacz stronę">%s</a> nie działa!</h3>
-                        <p>Kod odpowiedzi serwera hostującego stronę: <strong>%s</strong>. Opis błędu: <strong>%s: </strong> <i>%s</i></p>
-                        <p>Strona nie działa od: <strong>%s</strong></p>
+                        <h3>Strona <a href="%s" title="Zobacz strone">%s</a> nie dziala!</h3>
+                        <p>Kod odpowiedzi serwera hostujacego strone: <strong>%s</strong>. Opis bledu: <strong>%s: </strong> <i>%s</i></p>
+                        <p>Strona nie dziala od: <strong>%s</strong></p>
                     <div>
                 </body>
             </html>
@@ -70,14 +70,14 @@ class Mailer:
                             timestamp):
         """Send message about working"""
 
-        alert_text = "[OK] Strona %s znów działa." % site
+        alert_text = "[OK] Strona %s znow dziala." % site
         msg_content = """
             <html>
                 <body>
                     <div style="text-align: center">
                         <div style="background-color: #00cc00; width: 90px; height: 40px; line-height: 40px; color: white; display: inline-block">OK</div>
-                        <h3>Strona <a href="%s" title="Zobacz stronę">%s</a> zaczęła działać.</h3>
-                        <p>Awaria trwała od <strong>%s</strong> do <strong>%s</strong>.</p>
+                        <h3>Strona <a href="%s" title="Zobacz strone">%s</a> zaczela dzialac.</h3>
+                        <p>Awaria trwala od <strong>%s</strong> do <strong>%s</strong>.</p>
                     <div>
                 </body>
             </html>
