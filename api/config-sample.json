@@ -1,0 +1,11 @@
+{
+  "db_props": {
+    "hostname": "hostname",
+    "username": "username",
+    "password": "password",
+    "db_name": "db_name"
+  },
+  "sendgrid": {
+    "api_key": "api_key"
+  }
+}
