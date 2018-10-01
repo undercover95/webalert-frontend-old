@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 import sys
 import getopt
@@ -135,11 +136,11 @@ def update_sites_status(user_id=None, site_id=None):
                 SELECT site.`url`, last_status.*
                 FROM `pages` site JOIN `pages_status` last_status ON site.`id` = last_status.`site_id`
                 AND site.`user_id`=%s
-                LEFT JOIN `pages_status` not_last_status ON ( 
+                LEFT JOIN `pages_status` not_last_status ON (
                     site.`id` = `not_last_status`.`site_id`
-                    AND last_status.`last_checked` < not_last_status.`last_checked` 
-                ) 
-                WHERE not_last_status.`site_id` IS NULL 
+                    AND last_status.`last_checked` < not_last_status.`last_checked`
+                )
+                WHERE not_last_status.`site_id` IS NULL
             """ % user_id
         else:
             get_last_pages_status_sql_for_user_id = """
@@ -162,7 +163,7 @@ def update_sites_status(user_id=None, site_id=None):
 
         for row in cursor.fetchall():
             # go through each site in user's site
-            #print("Website: %s" % row['url'])
+            # print("Website: %s" % row['url'])
             update_site_status(user, row)
 
     db.conn.commit()
@@ -245,7 +246,14 @@ def update_site_status(user_data, last_status_row_data):
                 'code_description_long': get_code_desc_row[0]['long_desc']
             }
 
-            #print("send email about not-working for site "+row['url'])
+            # send notification
+            # create_notification_sql = "INSERT INTO `notifications` (`user_id`, `title`, `content`, `type`) VALUES (%s, '%s', '%s', '%s')" % (
+            #     user_data['id'], 'Strona przestała działać!', 'Strona '+row['url']+' nie działa!', 'warning')
+            # try:
+            #     cursor.execute(create_notification_sql)
+
+            # except mysql.connector.errors.Error as err:
+            #     pass
 
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
@@ -289,6 +297,14 @@ def update_site_status(user_data, last_status_row_data):
             # working now, but it didn't worked last time
             print("working now, but it didn't worked last time")
             print("send email about working for site "+row['url'])
+
+            # send notification
+            # create_notification_sql = "INSERT INTO `notifications` (`user_id`, `title`, `content`, `type`) VALUES (%s, %s, %s, '%s')" % (
+            #     user_data['id'], 'Strona znów działa.', 'Strona '+row['url']+' zaczęła działać.', 'success')
+            # try:
+            #     cursor.execute(create_notification_sql)
+            # except mysql.connector.errors.Error as err:
+            #     pass
 
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 

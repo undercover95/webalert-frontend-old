@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-
+import * as Actions from 'actions/Actions';
 import Dispather from '../Dispatcher';
 
 class SiteDataStore extends EventEmitter {
@@ -8,6 +8,11 @@ class SiteDataStore extends EventEmitter {
         super();
         this.siteData = {};
         this.checkedSites = [];
+
+        Actions.getLatestAllSitesStatus();
+        setInterval(() => {
+            Actions.getLatestAllSitesStatus();
+        }, 60000)
     }
 
     getAllSitesData() {
