@@ -200,6 +200,7 @@ def update_site_status(user_data, last_status_row_data):
         else:
             break
 
+    # ####
     # save current state to database
     update_page_sql = ""
 
