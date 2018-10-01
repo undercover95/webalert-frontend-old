@@ -8,11 +8,6 @@ class SiteDataStore extends EventEmitter {
         super();
         this.siteData = {};
         this.checkedSites = [];
-
-        Actions.getLatestAllSitesStatus();
-        setInterval(() => {
-            Actions.getLatestAllSitesStatus();
-        }, 60000)
     }
 
     getAllSitesData() {

@@ -30,12 +30,18 @@ export default class Cocpit extends React.Component {
 
     componentWillUnmount() {
         SiteDataStore.removeListener('change', this.getData);
+        clearInterval(this.periodicUpdate);
     }
 
     componentDidMount() {
         this.setState({
             waitingForData: true
         });
+
+        Actions.getLatestAllSitesStatus();
+        this.periodicUpdate = setInterval(() => {
+            Actions.getLatestAllSitesStatus();
+        }, 60000)
     }
 
     render() {

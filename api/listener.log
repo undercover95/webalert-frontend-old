@@ -86,4 +86,17 @@ Updating status of http://www.szot-jurkow.pl with code 200 completed.
 Checking website: http://trans-dar.pl
 Updating status of http://trans-dar.pl with code 200 completed.
 
-Updating all pages completed
+misiekbularz@interia.pl
+Checking website: http://pinnex.pl
+working now, but it didn't worked last time
+send email about working for site http://pinnex.pl
+Traceback (most recent call last):
+  File "./updatePagesStatus.py", line 355, in <module>
+    update_sites_status()
+  File "./updatePagesStatus.py", line 167, in update_sites_status
+    update_site_status(user, row)
+  File "./updatePagesStatus.py", line 312, in update_site_status
+    row['url'], row['last_working_time'], timestamp)
+  File "/api/mailer.py", line 73, in prepare_success_msg
+    alert_text = "[OK] Strona %s znów działa." % site
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xc3 in position 5: ordinal not in range(128)
