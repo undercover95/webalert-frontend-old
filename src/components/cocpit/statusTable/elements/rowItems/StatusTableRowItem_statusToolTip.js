@@ -25,7 +25,7 @@ export default class StatusTableRowItem_statusToolTip extends React.Component {
 
     return (
       <span>
-        <span className='statusToolTip' id={'popover-' + id} onClick={this.toggle}>
+        <span className='statusToolTip' id={'popover-' + id} onMouseOver={this.toggle} onMouseOut={this.toggle}>
           <i className='fa fa-question-circle' aria-hidden='true'></i>
         </span>
         <Popover placement='right' isOpen={this.state.popoverOpen} target={'popover-' + id} toggle={this.toggle}>

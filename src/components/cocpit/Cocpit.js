@@ -1,12 +1,14 @@
 import React from 'react';
 
+import { withRouter } from "react-router-dom";
+
 import Title from '../sections/Title';
 import Overview from './overview/Overview';
 import StatusTable from './statusTable/StatusTable';
 
 import SiteDataStore from 'stores/SiteDataStore';
 import * as Actions from 'actions/Actions';
-export default class Cocpit extends React.Component {
+class Cocpit extends React.Component {
 
     constructor() {
         super();
@@ -38,7 +40,7 @@ export default class Cocpit extends React.Component {
             waitingForData: true
         });
 
-        Actions.getLatestAllSitesStatus();
+        Actions.getLatestAllSitesStatus()
         this.periodicUpdate = setInterval(() => {
             Actions.getLatestAllSitesStatus();
         }, 60000)
@@ -54,3 +56,5 @@ export default class Cocpit extends React.Component {
         )
     }
 }
+
+export default Cocpit;

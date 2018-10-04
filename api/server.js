@@ -20,8 +20,10 @@ var con = mysql.createConnection({
 });
 
 con.connect(function (err) {
-  if (err)
+  if (err) {
+    console.log('Cannot connect with database!');
     throw err;
+  }
   else
     console.log('Connected with database!');
 });
@@ -38,13 +40,79 @@ app.use(function (req, res, next) {
   next();
 });
 
-
-var port = process.env.PORT || 3000;
+var port = process.env.PORT || config.api_port;
 
 app.listen(port, function () {
   console.log('Listening on port ' + port + '!');
 });
 
+
+
+// FORMAT OF TOKEN
+// Authorization: Bearer <access_token>
+
+// Verify Token
+function verifyToken(req, res, next) {
+
+  // Get auth header value
+  const bearerHeader = req.headers['authorization'];
+  // Check if bearer is undefined
+  if (typeof bearerHeader !== 'undefined') {
+    // Split at the space
+    const bearer = bearerHeader.split(' ');
+    // Get token from array
+    const bearerToken = bearer[1];
+
+    jwt.verify(bearerToken, 'secretkey', (err, authData) => {
+      if (err) res.sendStatus(403);
+
+      const user_id = authData.user.id;
+      // check if user id exists
+      const checkUserIdSql =
+        'SELECT * FROM `users` WHERE `id`=\'' + user_id + '\' LIMIT 1';
+
+      con.query(checkUserIdSql, (err, result) => {
+        if (err) {
+          res.sendStatus(500);
+          throw err;
+        } else if (result.length != 0) {
+          // user exists
+          // Set the token
+          req.token = bearerToken;
+          // Next middleware
+          next();
+        } else {
+          // user id not exists
+          res.sendStatus(403);
+        }
+      });
+    });
+
+  } else {
+    // Forbidden
+    res.sendStatus(403);
+  }
+}
+
+
+const fixUrlFormat = (url) => {
+  // fix url format
+  if (url.startsWith('http') || url.startsWith('https')) {
+    // good format, remove '/' from end of url if any is
+    let lastChar = url.charAt(url.length - 1);
+    if (lastChar == '/') url = url.slice(0, -1);
+  } else {
+    url = 'http://' + url;
+    let lastChar = url.charAt(url.length - 1);
+    if (lastChar == '/') url = url.slice(0, -1);
+  }
+
+  return url;
+}
+
+Array.prototype.contains = function (element) {
+  return this.indexOf(element) > -1;
+};
 
 
 /* /////////////////// */
@@ -59,7 +127,6 @@ app.post('/login', (req, res) => {
     res.sendStatus(403);
   }
 
-
   let user = {}
 
   // check if user exists
@@ -68,17 +135,15 @@ app.post('/login', (req, res) => {
 
   con.query(checkUserSql, function (err, result) {
     if (err) {
-      console.log('QUERY ERR');
+      res.sendStatus(500);
       throw err;
     } else {
-      console.log('QUERY OK');
       if (result.length > 0) {
         // user exists
         user = result[0];
 
         if (passwordHash.verify(password, user.password)) {
           // password ok
-          console.log('passwd ok')
 
           jwt.sign(
             { user }, 'secretkey',
@@ -87,7 +152,6 @@ app.post('/login', (req, res) => {
             });
 
         } else {
-          console.log('passwd wrong')
           res.json({ log_err: 'Nieprawidłowe hasło!' })
         }
 
@@ -97,41 +161,6 @@ app.post('/login', (req, res) => {
     }
   });
 })
-
-// FORMAT OF TOKEN
-// Authorization: Bearer <access_token>
-
-// Verify Token
-function verifyToken(req, res, next) {
-  console.log(req.headers)
-
-  // Get auth header value
-  const bearerHeader = req.headers['authorization'];
-  // Check if bearer is undefined
-  if (typeof bearerHeader !== 'undefined') {
-    // Split at the space
-    const bearer = bearerHeader.split(' ');
-    // Get token from array
-    const bearerToken = bearer[1];
-    // Set the token
-    req.token = bearerToken;
-    // Next middleware
-    next();
-  } else {
-    // Forbidden
-    res.sendStatus(403);
-  }
-}
-
-app.get('/checkIfUserIsLogged', verifyToken, (req, res) => {
-  jwt.verify(req.token, 'secretkey', (err, authData) => {
-    if (err) {
-      res.json({ 'result': false });
-    } else {
-      res.json({ 'result': true });
-    }
-  });
-});
 
 app.post('/register', (req, res) => {
 
@@ -182,17 +211,16 @@ app.post('/register', (req, res) => {
   }
 
   if (Object.keys(errors).length !== 0) {
-    console.log('Sa bledy');
     res.json(errors);
     return;
   } else {
-    console.log('check if username already exists');
     // check if username already exists
     const checkUserSql =
       'SELECT * FROM `users` WHERE `mail_address`=\'' + email + '\' LIMIT 1';
 
     con.query(checkUserSql, (err, result) => {
       if (err) {
+        res.sendStatus(500);
         throw err;
       } else if (result.length != 0) {
         errors['email_err'] =
@@ -206,10 +234,11 @@ app.post('/register', (req, res) => {
         email + '\', \'' + passwordHash.generate(password) + '\')';
 
       con.query(addUserSql, (err, result) => {
-        if (err)
+        if (err) {
+          res.sendStatus(500);
           throw err;
+        }
         else {
-          console.log('zarejestrowano');
           res.json({
             res: true
           });
@@ -220,295 +249,196 @@ app.post('/register', (req, res) => {
 })
 
 app.get('/getLastAllPagesStatus', verifyToken, function (req, res) {
-  jwt.verify(req.token, 'secretkey', (err, authData) => {
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      const user_id = jwt_decode(req.token).user.id;
-      console.log("user_id", user_id)
-      const getPagesSql =
-        'SELECT site.`url`, last_status.*, `status_codes`.`short_desc`,`status_codes`.`long_desc` FROM `pages` site JOIN `pages_status` last_status ON site.`id` = last_status.`site_id` AND site.`user_id` = ' + user_id + ' LEFT JOIN `status_codes` ON `status_codes`.`status_code`=`last_status`.`status_code` LEFT JOIN `pages_status` not_last_status ON ( site.`id` = `not_last_status`.`site_id` AND last_status.`last_checked` < not_last_status.`last_checked` ) WHERE not_last_status.`site_id` IS NULL ORDER BY status_code, site.`url` ';
 
-      con.query(getPagesSql, function (err, result) {
-        if (err)
-          throw err;
-        else
-          console.log(result)
-        res.json({ 'result': result });
-      });
+  const user_id = jwt_decode(req.token).user.id;
+  const getPagesSql =
+    'SELECT site.`url`, last_status.*, `status_codes`.`short_desc`,`status_codes`.`long_desc` FROM `pages` site JOIN `pages_status` last_status ON site.`id` = last_status.`site_id` AND site.`user_id` = ' + user_id + ' LEFT JOIN `status_codes` ON `status_codes`.`status_code`=`last_status`.`status_code` LEFT JOIN `pages_status` not_last_status ON ( site.`id` = `not_last_status`.`site_id` AND last_status.`last_checked` < not_last_status.`last_checked` ) WHERE not_last_status.`site_id` IS NULL ORDER BY status_code, site.`url` ';
+
+  con.query(getPagesSql, function (err, result) {
+    if (err) {
+      res.sendStatus(500);
+      throw err;
     }
+    res.json({ 'result': result });
   });
 })
 
 app.post('/getLastPageStatus', verifyToken, function (req, res) {
-  jwt.verify(req.token, 'secretkey', (err, authData) => {
+
+  const site_id = req.body.id;
+  const user_id = jwt_decode(req.token).user.id;
+
+  const getLastPageStatusSql =
+    'SELECT `pages`.`url`, `pages_status`.*, `status_codes`.`short_desc`,`status_codes`.`long_desc` FROM `pages`,`pages_status` LEFT JOIN `status_codes` ON `status_codes`.`status_code`=`pages_status`.`status_code` WHERE `pages_status`.`site_id`=`pages`.`id` AND `pages`.`id`=\'' +
+    site_id + '\' AND `pages`.`user_id`=' + user_id + ' ORDER BY `last_checked` DESC LIMIT 1';
+
+  con.query(getLastPageStatusSql, function (err, result) {
     if (err) {
-      res.sendStatus(403);
-    } else {
-      const site_id = req.body.id;
-      const user_id = jwt_decode(req.token).user.id;
-
-      const getLastPageStatusSql =
-        'SELECT `pages`.`url`, `pages_status`.*, `status_codes`.`short_desc`,`status_codes`.`long_desc` FROM `pages`,`pages_status` LEFT JOIN `status_codes` ON `status_codes`.`status_code`=`pages_status`.`status_code` WHERE `pages_status`.`site_id`=`pages`.`id` AND `pages`.`id`=\'' +
-        site_id + '\' AND `pages`.`user_id`=' + user_id + ' ORDER BY `last_checked` DESC LIMIT 1';
-
-      con.query(getLastPageStatusSql, function (err, result) {
-        if (err)
-          throw err;
-        else
-          res.json({ 'result': result });
-      });
+      res.sendStatus(500);
+      throw err;
     }
+    else
+      res.json({ 'result': result });
   });
 })
-
-const fixUrlFormat = (url) => {
-  // fix url format
-  if (url.startsWith('http') || url.startsWith('https')) {
-    // good format, remove '/' from end of url if any is
-    let lastChar = url.charAt(url.length - 1);
-    if (lastChar == '/') url = url.slice(0, -1);
-  } else {
-    url = 'http://' + url;
-    let lastChar = url.charAt(url.length - 1);
-    if (lastChar == '/') url = url.slice(0, -1);
-  }
-
-  return url;
-}
-
-Array.prototype.contains = function (element) {
-  return this.indexOf(element) > -1;
-};
 
 app.post('/addSinglePage', verifyToken, function (req, res) {
-  jwt.verify(req.token, 'secretkey', (err, authData) => {
+
+  let url = fixUrlFormat(req.body.url);
+  const user_id = jwt_decode(req.token).user.id;
+
+  let currentPages = [];
+  let getPagesSql = 'SELECT `url` FROM `pages` WHERE `user_id`=' + user_id;
+  con.query(getPagesSql, function (err, result) {
     if (err) {
-      res.sendStatus(403);
-    } else {
-      let url = fixUrlFormat(req.body.url);
-      const user_id = jwt_decode(req.token).user.id;
-
-
-
-      let currentPages = [];
-      let getPagesSql = 'SELECT `url` FROM `pages` WHERE `user_id`=' + user_id;
-      con.query(getPagesSql, function (err, result) {
-        if (err) throw err;
-        else {
-          result.map(dataRow => {
-            currentPages.push(dataRow['url'])
-          })
-
-          // remove duplicates
-          if (!currentPages.contains(url)) {
-            const addPageSql = 'INSERT INTO `pages` (`url`, `user_id`) VALUES (\'' + url + '\', ' + user_id + ')';
-
-            con.query(addPageSql, function (err, result) {
-              if (err)
-                throw err;
-              else
-                res.json({ result: true });
-            });
-          } else {
-            res.json({ result: false });
-          }
-        }
-      });
+      res.sendStatus(500);
+      throw err;
     }
-  });
-})
+    else {
+      result.map(dataRow => {
+        currentPages.push(dataRow['url'])
+      })
 
-app.post('/addMultiplePages', verifyToken, function (req, res) {
-  jwt.verify(req.token, 'secretkey', (err, authData) => {
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      const sites = req.body.sites;
-      const user_id = jwt_decode(req.token).user.id;
+      // remove duplicates
+      if (!currentPages.contains(url)) {
+        const addPageSql = 'INSERT INTO `pages` (`url`, `user_id`) VALUES (\'' + url + '\', ' + user_id + ')';
 
-      let currentPages = [];
-      let getPagesSql = 'SELECT `url` FROM `pages` WHERE `user_id`=' + user_id;
-
-      con.query(getPagesSql, function (err, result) {
-        if (err) throw err;
-        else {
-          result.map(dataRow => {
-            currentPages.push(dataRow['url'])
-          });
-
-          let nonAddedPages = [];
-
-          sites.forEach(url => {
-
-            url = fixUrlFormat(url);
-
-            // remove duplicates
-            if (currentPages.contains(url)) {
-              nonAddedPages.push(url);
-              return;
-            } else {
-              let insertPageSql = 'INSERT INTO `pages` (`url`, `user_id`) VALUES (\'' + url + '\', ' + user_id + ')';
-
-              con.query(insertPageSql, function (err, result) {
-                if (err) throw err;
-              });
-            }
-          });
-
-          res.json({ 'errors': nonAddedPages });
-        }
-      });
-    }
-  });
-})
-
-app.post('/removePage', verifyToken, function (req, res) {
-  jwt.verify(req.token, 'secretkey', (err, authData) => {
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      const id = req.body.id;
-      const user_id = jwt_decode(req.token).user.id;
-
-      if (id != undefined) {
-        const removePageSql = 'DELETE FROM `pages` WHERE `pages`.`id`=' + id + ' AND `pages`.`user_id`=' + user_id;
-
-        con.query(removePageSql, function (err, result) {
-          if (err)
+        con.query(addPageSql, function (err, result) {
+          if (err) {
+            res.sendStatus(500);
             throw err;
+          }
           else
             res.json({ result: true });
         });
-      } else
+      } else {
         res.json({ result: false });
+      }
     }
   });
+
+})
+
+app.post('/addMultiplePages', verifyToken, function (req, res) {
+
+  const sites = req.body.sites;
+  const user_id = jwt_decode(req.token).user.id;
+
+  let currentPages = [];
+  let getPagesSql = 'SELECT `url` FROM `pages` WHERE `user_id`=' + user_id;
+
+  con.query(getPagesSql, function (err, result) {
+    if (err) {
+      res.sendStatus(500);
+      throw err;
+    }
+    else {
+      result.map(dataRow => {
+        currentPages.push(dataRow['url'])
+      });
+
+      let nonAddedPages = [];
+
+      sites.forEach(url => {
+
+        url = fixUrlFormat(url);
+
+        // remove duplicates
+        if (currentPages.contains(url)) {
+          nonAddedPages.push(url);
+          return;
+        } else {
+          let insertPageSql = 'INSERT INTO `pages` (`url`, `user_id`) VALUES (\'' + url + '\', ' + user_id + ')';
+
+          con.query(insertPageSql, function (err, result) {
+            if (err) {
+              res.sendStatus(500);
+              throw err;
+            }
+          });
+        }
+      });
+
+      res.json({ 'errors': nonAddedPages });
+    }
+  });
+
+})
+
+app.post('/removePage', verifyToken, function (req, res) {
+
+  const id = req.body.id;
+  const user_id = jwt_decode(req.token).user.id;
+
+  if (id != undefined) {
+    const removePageSql = 'DELETE FROM `pages` WHERE `pages`.`id`=' + id + ' AND `pages`.`user_id`=' + user_id;
+
+    con.query(removePageSql, function (err, result) {
+      if (err) {
+        res.sendStatus(500);
+        throw err;
+      }
+      else
+        res.json({ result: true });
+    });
+  } else
+    res.json({ result: false });
+
 })
 
 app.get('/refreshAllPagesStatus', verifyToken, function (req, res) {
-  jwt.verify(req.token, 'secretkey', (err, authData) => {
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      const user_id = jwt_decode(req.token).user.id;
 
-      exec('/usr/bin/python updatePagesStatus.py -u ' + user_id, function (err, stdout, stderr) {
-        if (err) {
-          //console.log('err', stderr);
-          res.send(err);
-        } else {
-          //console.log('no err', stdout);
-          res.send(stdout.toString())
-        }
-      });
+  const user_id = jwt_decode(req.token).user.id;
+
+  exec('/usr/bin/python updatePagesStatus.py -u ' + user_id, function (err, stdout, stderr) {
+    if (err) {
+      res.sendStatus(500);
+      //console.log('err', stderr);
+      res.send(err);
+    } else {
+      //console.log('no err', stdout);
+      res.send(stdout.toString())
     }
   });
+
 })
 
 
 app.post('/refreshSinglePageStatus', verifyToken, function (req, res) {
-  jwt.verify(req.token, 'secretkey', (err, authData) => {
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      const site_id = req.body.id;
-      const user_id = jwt_decode(req.token).user.id;
 
-      exec('/usr/bin/python updatePagesStatus.py -u ' + user_id + ' ' + site_id, function (err, stdout, stderr) {
-        if (err) {
-          // console.log("err", stderr);
-          res.json({ result: false });
-        } else {
-          // console.log("no err", stdout);
-          res.send(stdout.toString())
-        }
-      });
+  const site_id = req.body.id;
+  const user_id = jwt_decode(req.token).user.id;
+
+  exec('/usr/bin/python updatePagesStatus.py -u ' + user_id + ' ' + site_id, function (err, stdout, stderr) {
+    if (err) {
+      res.sendStatus(500);
+      // console.log("err", stderr);
+      res.json({ result: false });
+    } else {
+      // console.log("no err", stdout);
+      res.send(stdout.toString())
     }
   });
+
 })
 
 
 app.post('/getResponseTimeForPeriod', verifyToken, function (req, res) {
-  jwt.verify(req.token, 'secretkey', (err, authData) => {
+
+  const site_id = req.body.id;
+  const period = req.body.period;
+  const user_id = jwt_decode(req.token).user.id;
+
+  const getResponseTimeSql =
+    'SELECT * FROM `pages_status` LEFT JOIN `pages` ON `pages`.`id`=`site_id` WHERE `pages`.`id`=\'' + site_id + '\' AND `pages_status`.`last_checked`>=DATE_SUB(NOW(),INTERVAL ' + period + ' HOUR) AND `pages`.`user_id`=' + user_id;
+
+  con.query(getResponseTimeSql, function (err, result) {
     if (err) {
-      res.sendStatus(403);
-    } else {
-      const site_id = req.body.id;
-      const period = req.body.period;
-      const user_id = jwt_decode(req.token).user.id;
-
-      const getResponseTimeSql =
-        'SELECT * FROM `pages_status` LEFT JOIN `pages` ON `pages`.`id`=`site_id` WHERE `pages`.`id`=\'' + site_id + '\' AND `pages_status`.`last_checked`>=DATE_SUB(NOW(),INTERVAL ' + period + ' HOUR) AND `pages`.`user_id`=' + user_id;
-
-      con.query(getResponseTimeSql, function (err, result) {
-        if (err)
-          throw err;
-        else
-          res.json({ 'result': result });
-      });
+      res.sendStatus(500);
+      throw err;
     }
+    else
+      res.json({ 'result': result });
   });
+
 })
-
-
-/*
-app.post('/getReports', verifyToken, function (req, res) {
-  jwt.verify(req.token, 'secretkey', (err, authData) => {
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      const period = req.body.period;
-
-      const getReportsSql =
-        'SELECT * FROM `reports` WHERE `generated_time`>=DATE_SUB(NOW(),INTERVAL ' +
-        period + ' HOUR) ORDER BY `generated_time` DESC';
-
-      con.query(getReportsSql, function (err, result) {
-        if (err)
-          throw err;
-        else
-          res.json({ 'result': result });
-      });
-    }
-  });
-})
-
-app.post('/receiveReport', verifyToken, function (req, res) {
-  jwt.verify(req.token, 'secretkey', (err, authData) => {
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      const report_id = req.body.report_id;
-
-      const receiveReportSql =
-        'UPDATE `reports` SET `is_seen`=1 WHERE `id`=' + report_id;
-
-      con.query(getReportsSql, function (err, result) {
-        if (err) {
-          throw err;
-          res.json({ result: false });
-        } else
-          res.json({ result: true });
-      });
-    }
-  });
-})
-
-app.get('/getNewReportsCounter', verifyToken, function (req, res) {
-  jwt.verify(req.token, 'secretkey', (err, authData) => {
-    if (err) {
-      res.sendStatus(403);
-    } else {
-      const getNewReportsCounterSql =
-        'SELECT count(*) as `counter` FROM `reports` WHERE `is_seen`=0';
-
-      con.query(getNewReportsCounterSql, function (err, result) {
-        if (err)
-          throw err;
-        else
-          res.json({ 'result': result });
-      });
-    }
-  });
-})*/
