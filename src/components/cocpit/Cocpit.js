@@ -1,7 +1,5 @@
 import React from 'react';
 
-import { withRouter } from "react-router-dom";
-
 import Title from '../sections/Title';
 import Overview from './overview/Overview';
 import StatusTable from './statusTable/StatusTable';

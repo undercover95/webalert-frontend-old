@@ -54,7 +54,9 @@ class Database:
 
 def check_if_working(code):
     code = int(code)
-    if code >= 400 and code < 600 or code < 0:
+    if code == -100:
+        return None
+    else if code >= 400 and code < 600 or code < 0:
         return -1
     else:
         return 0
@@ -194,24 +196,23 @@ def update_site_status(user_data, last_status_row_data):
         time = str(response['time'])
 
         # checking
-        if check_if_working(code) != 0:
+        if check_if_working(code) == -1:
             not_working = True
             continue
         else:
             break
 
-    # ####
     # save current state to database
     update_page_sql = ""
 
     last_status_code = None
-    # website, which has just inserted, has NULL in status_code field
+    # website, which was just inserted, has NULL in status_code field
     if row['status_code'] == "" or row['status_code'] == None:
         last_status_code = -100  # prevent errors
     else:
         last_status_code = row['status_code']
 
-    if check_if_working(code) != 0:
+    if check_if_working(code) == -1:
         # website not working
         print("website %s not working" % row['url'])
 
@@ -263,7 +264,7 @@ def update_site_status(user_data, last_status_row_data):
             mailer_service.send_email(
                 msg[0], msg[1], user_data['mail_address'])
 
-        elif check_if_working(last_status_code) != 0:
+        elif check_if_working(last_status_code) == -1:
             # not working now and didn't worked last time
             print("not working now and didn't worked last time")
 
@@ -294,7 +295,7 @@ def update_site_status(user_data, last_status_row_data):
             print(err)
             pass
 
-        if check_if_working(last_status_code) != 0:
+        if check_if_working(last_status_code) == -1:
             # working now, but it didn't worked last time
             print("working now, but it didn't worked last time")
             print("send email about working for site "+row['url'])
