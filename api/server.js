@@ -390,7 +390,7 @@ app.get('/refreshAllPagesStatus', verifyToken, function (req, res) {
 
   const user_id = jwt_decode(req.token).user.id;
 
-  exec('/usr/bin/python updatePagesStatus.py -u ' + user_id, function (err, stdout, stderr) {
+  exec('/usr/bin/python updatePagesStatus.py -u ' + user_id + ' > update_all_user_' + user_id + '.log 2>&1', function (err, stdout, stderr) {
     if (err) {
       res.sendStatus(500);
       //console.log('err', stderr);
@@ -409,7 +409,7 @@ app.post('/refreshSinglePageStatus', verifyToken, function (req, res) {
   const site_id = req.body.id;
   const user_id = jwt_decode(req.token).user.id;
 
-  exec('/usr/bin/python updatePagesStatus.py -u ' + user_id + ' ' + site_id, function (err, stdout, stderr) {
+  exec('/usr/bin/python updatePagesStatus.py -u ' + user_id + ' ' + site_id + ' > update_single_user_' + user_id + '.log 2>&1', function (err, stdout, stderr) {
     if (err) {
       res.sendStatus(500);
       // console.log("err", stderr);

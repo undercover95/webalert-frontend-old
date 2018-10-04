@@ -4,7 +4,7 @@ import { getToken } from './AuthService';
 const axios = require('axios');
 const qs = require('qs');
 
-const config = require('./config.json');
+const config = require('../config/config.json');
 const apihost = config['apihost'];
 
 const getHeaders = () => {

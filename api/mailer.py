@@ -41,7 +41,6 @@ class Mailer:
             print("Mail sent correctly.")
         except urllib.HTTPError as e:
             print("Mail sending failed.")
-            # print(e.read())
             exit()
 
     def prepare_failure_msg(self, site, response_code,
@@ -55,14 +54,14 @@ class Mailer:
                     <div style="text-align: center">
                         <div style="background-color: #cc0000; width: 90px; height: 40px; line-height: 40px; color: white; display: inline-block">AWARIA</div>
                         <h3>Strona <a href="%s" title="Zobacz strone">%s</a> nie dziala!</h3>
-                        <p>Kod odpowiedzi serwera hostujacego strone: <strong>%s</strong>. Opis bledu: <strong>%s: </strong> <i>%s</i></p>
+                        <p><strong>%s</strong><br/><i>%s</i></p>
                         <p>Strona nie dziala od: <strong>%s</strong></p>
                     <div>
                 </body>
             </html>
-        """ % (site, site, response_code,
+        """ % (site, site,
                code_description['code_description_short'],
-               code_description['code_description_long'], timestamp)
+               code_description['code_description_long'], timestamp.strftime('%Y-%m-%d %H:%M:%S'))
 
         return (alert_text, msg_content)
 
@@ -81,6 +80,6 @@ class Mailer:
                     <div>
                 </body>
             </html>
-        """ % (site, site, last_response_time, timestamp)
+        """ % (site, site, last_response_time, timestamp.strftime('%Y-%m-%d %H:%M:%S'))
 
         return (alert_text, msg_content)

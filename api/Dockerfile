@@ -18,10 +18,16 @@ RUN apt-get install nodejs
 RUN pip install \
         pycurl \
         mysql-connector \
-        sendgrid
+        sendgrid \
+        pytz
 
 COPY package*.json ./
 RUN npm install
+
+# configure timezone
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y tzdata
+RUN ln -fs /usr/share/zoneinfo/Europe/Warsaw /etc/localtime
+RUN echo "Europe/Warsaw" >/etc/timezone && dpkg-reconfigure -f noninteractive tzdata
 
 EXPOSE 3000
 

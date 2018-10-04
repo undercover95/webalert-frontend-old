@@ -12,7 +12,7 @@ function startMysqlServer() {
 
 function startAPIServer() {
     echo "Starting API server..."
-    echo $(docker run -d --rm -p 3000:3000 -v "$PWD":/api --name monitor-stron-api --link mysql57 api) 
+    echo $(docker run -d --rm -p 3000:3000 -e TZ='Europe/Warsaw' -v "$PWD":/api --name monitor-stron-api --link mysql57 api) 
     if [ $? -ne 0 ]; then
             echo "Cannot start API server!"
             exit 1

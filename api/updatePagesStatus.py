@@ -14,7 +14,8 @@ except ImportError:
 import time
 import sched
 import threading
-import datetime
+from datetime import datetime
+from pytz import timezone
 
 import mysql.connector
 from mysql.connector import errorcode
@@ -106,6 +107,11 @@ def get_http_response(url, timeout=10):
     return {"code": code, "time": time}
 
 
+def get_current_time_by_timezone(zone='Europe/Warsaw'):
+    other_zone = timezone(zone)
+    return datetime.now(other_zone)
+
+
 def update_sites_status(user_id=None, site_id=None):
     db.connect()
     cursor = db.conn.cursor(dictionary=True, buffered=True)
@@ -174,6 +180,13 @@ def update_sites_status(user_id=None, site_id=None):
     db.disconnect()
 
 
+def convertMillis(millis):
+    seconds = (millis/1000) % 60
+    minutes = (millis/(1000*60)) % 60
+    hours = (millis/(1000*60*60)) % 24
+    return (seconds, minutes, hours)
+
+
 def update_site_status(user_data, last_status_row_data):
     cursor = db.conn.cursor(dictionary=True, buffered=True)
     row = last_status_row_data
@@ -183,11 +196,11 @@ def update_site_status(user_data, last_status_row_data):
     time = None
     not_working = False
 
-    for i in range(0, 2):
+    for i in range(0, 3):
         print("Checking website: %s" % row['url'])
         response = None
         if not_working:
-            response = get_http_response(row['url'], 20)
+            response = get_http_response(row['url'])
             # if website does not work, check again with larger timetout
         else:
             response = get_http_response(row['url'])
@@ -248,23 +261,16 @@ def update_site_status(user_data, last_status_row_data):
                 'code_description_long': get_code_desc_row[0]['long_desc']
             }
 
-            # send notification
-            # create_notification_sql = "INSERT INTO `notifications` (`user_id`, `title`, `content`, `type`) VALUES (%s, '%s', '%s', '%s')" % (
-            #     user_data['id'], 'Strona przestała działać!', 'Strona '+row['url']+' nie działa!', 'warning')
-            # try:
-            #     cursor.execute(create_notification_sql)
-
-            # except mysql.connector.errors.Error as err:
-            #     pass
-
-            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            current_time = get_current_time_by_timezone()
+            print("get_current_time_by_timezone %s" %
+                  current_time)
 
             msg = mailer_service.prepare_failure_msg(
-                row['url'], code, code_description, timestamp)
+                row['url'], code, code_description, current_time)
             mailer_service.send_email(
                 msg[0], msg[1], user_data['mail_address'])
 
-        elif check_if_working(last_status_code) == -1:
+        else:
             # not working now and didn't worked last time
             print("not working now and didn't worked last time")
 
@@ -300,18 +306,12 @@ def update_site_status(user_data, last_status_row_data):
             print("working now, but it didn't worked last time")
             print("send email about working for site "+row['url'])
 
-            # send notification
-            # create_notification_sql = "INSERT INTO `notifications` (`user_id`, `title`, `content`, `type`) VALUES (%s, %s, %s, '%s')" % (
-            #     user_data['id'], 'Strona znów działa.', 'Strona '+row['url']+' zaczęła działać.', 'success')
-            # try:
-            #     cursor.execute(create_notification_sql)
-            # except mysql.connector.errors.Error as err:
-            #     pass
-
-            timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            current_time = get_current_time_by_timezone()
+            print("get_current_time_by_timezone %s" %
+                  current_time)
 
             msg = mailer_service.prepare_success_msg(
-                row['url'], row['last_working_time'], timestamp)
+                row['url'], row['last_working_time'], current_time)
             mailer_service.send_email(
                 msg[0], msg[1], user_data['mail_address'])
 
