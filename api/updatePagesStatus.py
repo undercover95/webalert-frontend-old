@@ -56,7 +56,7 @@ def check_if_working(code):
     code = int(code)
     if code == -100:
         return None
-    else if code >= 400 and code < 600 or code < 0:
+    elif code >= 400 and code < 600 or code < 0:
         return -1
     else:
         return 0

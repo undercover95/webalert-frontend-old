@@ -2,7 +2,7 @@
 
 function startMysqlServer() {
     echo "Starting mysql server..."
-    echo $(docker run -d --rm --name mysql57 --rm -e MYSQL_ROOT_PASSWORD=1995 -e MYSQL_PASSWORD=1995 -e TZ='Europe/Warsaw' -v "/home/michal/docker_mysqldata":/var/lib/mysql mysql:5.7) 
+    echo $(docker run -d --rm --name mysql57 --rm -e MYSQL_ROOT_PASSWORD=1995 -e TZ='Europe/Warsaw' -v "/home/michal/docker_mysqldata":/var/lib/mysql mysql:5.7) 
     if [ $? -ne 0 ]; then
             echo "Cannot start mysql server!"
             exit 1
