@@ -1,9 +1,0 @@
-services:
-  mysql:
-    image: mysql:5.7
-  api:
-    build: .
-    links:
-    - mysql
-    ports:
-    - 3000:3000

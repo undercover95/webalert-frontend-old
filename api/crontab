@@ -1,2 +1,0 @@
-*/5 * * * * root cd /api && ./updatePagesStatus.py > updater.log 2>&1
-
