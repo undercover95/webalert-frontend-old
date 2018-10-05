@@ -11,22 +11,41 @@ var exec = require('child_process').exec;
 const config = require('./config.json');
 
 const dbconfig = config.db_props;
-var con = mysql.createConnection({
+
+const db_conf = {
   host: dbconfig['hostname'],
   user: dbconfig['username'],
   password: dbconfig['password'],
   database: dbconfig['db_name'],
   dateStrings: true
-});
+};
 
-con.connect(function (err) {
-  if (err) {
-    console.log('Cannot connect with database!');
-    throw err;
-  }
-  else
-    console.log('Connected with database!');
-});
+let con;
+
+let handleDisconnect = () => {
+  con = mysql.createConnection(db_conf);
+
+  con.connect((err) => {
+    if (err) {
+      console.log('Cannot connect with database!');
+      setTimeout(handleDisconnect, 2000)
+    }
+    else
+      console.log('Connected with database!');
+  });
+
+  con.on('error', (err) => {
+    console.log('db error', err);
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+      console.log('Connection LOST!');
+      handleDisconnect();
+    } else {
+      throw err;
+    }
+  });
+}
+
+handleDisconnect();
 
 app.use(bodyParser.json());  // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true }));  // support encoded bodies
