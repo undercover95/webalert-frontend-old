@@ -12,7 +12,7 @@ class SiteDataStore extends EventEmitter {
 
     getAllSitesData() {
 
-        let compare = (a, b) => {
+        /*let compare = (a, b) => {
             const codeA = a.status_code
             const codeB = b.status_code
 
@@ -23,9 +23,9 @@ class SiteDataStore extends EventEmitter {
                 comparison = -1;
             }
             return comparison;
-        }
+        }*/
 
-        return Object.values(this.siteData).sort(compare);
+        return Object.values(this.siteData);
     }
 
     getSiteUrlById(site_id) {

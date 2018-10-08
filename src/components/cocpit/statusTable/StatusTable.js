@@ -46,13 +46,9 @@ class StatusTable extends React.Component {
             <div className='card customCard'>
                 <div className='card-header'>Aktualny stan witryn</div>
                 <div className='card-body'>
-                    {
-                        !emptyData ? (
-                            <InputGroup className={'mb-3'}>
-                                <Input id="search-site" placeholder="&#xF002; Przefiltruj listę po adresie URL" value={this.state.search} onChange={this.updateSearch} />
-                            </InputGroup>
-                        ) : ''
-                    }
+                    <InputGroup className={'mb-3'}>
+                        <Input id="search-site" placeholder="&#xF002; Przefiltruj listę po adresie URL" value={this.state.search} onChange={this.updateSearch} />
+                    </InputGroup>
                     <div id='status-table-wrapper' className={'table-responsive'}>
                         {
                             !waitingForData ? (
