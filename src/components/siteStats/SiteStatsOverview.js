@@ -20,8 +20,8 @@ const SiteStatsOverview = (props) => {
 
     props.data.map(row => {
       let currentVal = row['last_response_time']
-
-      if (currentVal > currentMax) currentMax = currentVal
+      if (currentVal === null || currentVal === undefined) return;
+      else if (currentVal > currentMax) currentMax = currentVal
       else if (currentVal < currentMin) currentMin = currentVal
     });
 
