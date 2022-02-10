@@ -76,7 +76,7 @@
     "humanize-duration": "^3.15.1",
     "jquery": "^3.3.1",
     "jwt-decode": "^2.2.0",
-    "node-sass": "^4.8.3",
+    "node-sass": "^7.0.0",
     "popper": "^1.0.1",
     "popper.js": "^1.14.3",
     "prop-types": "^15.6.2",
